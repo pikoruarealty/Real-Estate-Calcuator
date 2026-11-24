@@ -9,6 +9,7 @@ import type { AreaUnit, VighaVariant } from '@/engine/types';
 import { Card } from '@/components/ui/Card';
 import { NumberInput } from '@/components/ui/NumberInput';
 import { Select } from '@/components/ui/Select';
+import { Tooltip } from '@/components/ui/Tooltip';
 import { UnitSelect } from './AreaInputs';
 
 export function UnitConverter() {
@@ -23,14 +24,14 @@ export function UnitConverter() {
   const lenSqft = len != null && wid != null && len > 0 && wid > 0 ? lengthToArea(len, wid, lenUnit) : null;
 
   return (
-    <Card title="Unit converter" className="mt-4">
+    <Card title="Unit converter" tip="converter" className="mt-4" subtitle="Turn sq m, vaar, guntha or vigha into sq ft (and back).">
       <div className="space-y-4">
         <div className="grid grid-cols-[1fr_9.5rem] items-end gap-2">
           <NumberInput label="Value to convert" value={value} onChange={setValue} min={0} placeholder="e.g. 1" />
           <UnitSelect value={from} onChange={setFrom} label="Convert from" />
         </div>
 
-        <Select label="Vigha size used for conversion" value={vigha} onChange={(v) => setVigha(v as VighaVariant)}>
+        <Select label="Vigha size used for conversion" tip="u_vigha" value={vigha} onChange={(v) => setVigha(v as VighaVariant)}>
             {(Object.keys(VIGHA_VARIANTS) as VighaVariant[]).map((k) => (
               <option key={k} value={k}>{VIGHA_VARIANTS[k].sqft.toLocaleString('en-IN')} sq ft — {VIGHA_VARIANTS[k].label}</option>
             ))}
@@ -43,7 +44,7 @@ export function UnitConverter() {
           <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm sm:grid-cols-3" aria-label="Converted values">
             {ALL_UNITS.filter((u) => u !== from).map((u) => (
               <div key={u} className="flex justify-between gap-2 border-b border-border py-1.5">
-                <dt className="text-text-muted">{UNIT_LABELS[u]}</dt>
+                <dt className="flex items-center text-text-muted">{UNIT_LABELS[u]}<Tooltip term={`u_${u}`} /></dt>
                 <dd className="text-right">{formatAreaNumber(all[u])}</dd>
               </div>
             ))}
@@ -51,7 +52,7 @@ export function UnitConverter() {
         )}
 
         <fieldset className="rounded-lg border border-border p-3">
-          <legend className="px-1 text-xs text-text-muted">Length × width → area</legend>
+          <legend className="flex items-center px-1 text-xs text-text-muted">Length × width → area<Tooltip term="lengthHelper" /></legend>
           <div className="grid grid-cols-[1fr_1fr_5.5rem] items-end gap-2">
             <NumberInput label="Length" value={len} onChange={setLen} min={0} />
             <NumberInput label="Width" value={wid} onChange={setWid} min={0} />

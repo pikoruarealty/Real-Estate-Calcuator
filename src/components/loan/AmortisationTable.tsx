@@ -1,13 +1,18 @@
 import { formatINR } from '@/engine/format';
 import type { LoanResult } from '@/engine/types';
 import { Card } from '@/components/ui/Card';
+import { Tooltip } from '@/components/ui/Tooltip';
 
 export function AmortisationTable({ loan }: { loan: LoanResult }) {
   if (!loan.yearly.length) return null;
   return (
     <Card>
       <details>
-        <summary className="font-display text-xl">Yearly amortisation</summary>
+        <summary className="flex min-h-8 items-center font-display text-lg">
+          <span aria-hidden className="chev mr-2 text-xs text-text-muted">▶</span>
+          Year-by-year repayment<Tooltip term="amortisation" />
+        </summary>
+        <p className="mt-2 text-xs text-text-muted">How each year’s EMIs split between interest and paying off the loan. Early years are mostly interest.</p>
         <div className="mt-3 max-h-96 overflow-auto">
           <table className="w-full min-w-[26rem] text-sm">
             <caption className="sr-only">Year-wise principal and interest</caption>

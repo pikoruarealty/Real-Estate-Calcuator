@@ -1,11 +1,11 @@
 import type { Metadata, Viewport } from 'next';
-import { Cormorant_Garamond, Inter } from 'next/font/google';
+import { Geist } from 'next/font/google';
 import Script from 'next/script';
 import { BRAND } from '@/config/brand';
 import './globals.css';
 
-const cormorant = Cormorant_Garamond({ subsets: ['latin'], weight: ['600'], variable: '--font-cormorant', display: 'swap' });
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
+// latin-ext carries the ₹ glyph
+const geist = Geist({ subsets: ['latin', 'latin-ext'], variable: '--font-geist', display: 'swap' });
 
 const title = 'Ahmedabad Real Estate Calculator: true area, all-in cost & EMI';
 const description =
@@ -26,7 +26,7 @@ export const viewport: Viewport = { themeColor: '#0B0B0B', width: 'device-width'
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const plausible = process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN;
   return (
-    <html lang="en-IN" className={`${cormorant.variable} ${inter.variable}`}>
+    <html lang="en-IN" className={geist.variable}>
       <body className="min-h-screen antialiased">
         {children}
         {plausible && <Script defer data-domain={plausible} src="https://plausible.io/js/script.js" strategy="afterInteractive" />}

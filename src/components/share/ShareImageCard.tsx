@@ -20,13 +20,13 @@ export const ShareImageCard = forwardRef<HTMLDivElement, { input: CalculatorInpu
         ref={ref}
         style={{
           width: 1080, height: 1350, background: '#0B0B0B', color: '#F5F2EA', padding: 72, boxSizing: 'border-box',
-          display: 'flex', flexDirection: 'column', fontFamily: 'var(--font-inter), system-ui, sans-serif',
+          display: 'flex', flexDirection: 'column', fontFamily: 'var(--font-geist), system-ui, sans-serif',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
           <img src={BRAND.logoPath} alt="" width={64} height={64} />
           <div>
-            <div style={{ fontFamily: 'var(--font-cormorant), Georgia, serif', fontWeight: 600, fontSize: 52, color: '#D4AF37', lineHeight: 1 }}>{BRAND.name}</div>
+            <div style={{ fontWeight: 600, fontSize: 48, color: '#D4AF37', lineHeight: 1, letterSpacing: -1 }}>{BRAND.name}</div>
             <div style={{ fontSize: 24, color: '#9A968C', marginTop: 6 }}>{BRAND.tagline}</div>
           </div>
         </div>
@@ -42,7 +42,7 @@ export const ShareImageCard = forwardRef<HTMLDivElement, { input: CalculatorInpu
 
         <div style={{ marginTop: 56 }}>
           <div style={{ fontSize: 28, color: '#9A968C', textTransform: 'uppercase', letterSpacing: 3 }}>All-in cost</div>
-          <div style={{ fontFamily: 'var(--font-cormorant), Georgia, serif', fontWeight: 600, fontSize: 150, color: '#D4AF37', lineHeight: 1.05, marginTop: 8, fontVariantNumeric: 'lining-nums tabular-nums' }}>
+          <div style={{ fontWeight: 700, fontSize: 132, color: '#D4AF37', lineHeight: 1.05, marginTop: 8, letterSpacing: -4, fontVariantNumeric: 'lining-nums tabular-nums' }}>
             {cost ? formatINR(cost.allInCost) : '—'}
           </div>
           <div style={{ fontSize: 40, color: '#F5F2EA' }}>{cost ? formatINRWords(cost.allInCost) : ''}</div>

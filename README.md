@@ -45,4 +45,5 @@ Brand name / tagline / logo live in `src/config/brand.ts` (replace the placehold
 - Confirm commercial-property GST (`GST.commercialDefaultPct`, currently 12%, flagged `TODO(spec)` in config).
 - Re-check statutory rates and bump `RATES_UPDATED_ON` in `src/engine/config.ts`.
 - Run Lighthouse (mobile) against the production build; target ≥ 90 for Performance and Accessibility.
-- PDF uses Inter TTFs in `public/fonts` (needed for the ₹ glyph). Inter is OFL-licensed.
+- Font is Geist everywhere (web via `next/font/google`; PDF via the Geist TTFs in `public/fonts`, which include the ₹ glyph). Geist is OFL-licensed.
+- Glossary / ⓘ explanations live in `src/content/glossary.ts`. Edit wording there; every ⓘ and the Glossary dialog update together.

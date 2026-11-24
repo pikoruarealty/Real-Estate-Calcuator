@@ -6,14 +6,14 @@ test.use({ permissions: ['clipboard-read', 'clipboard-write'] });
 
 test('Example loads the reference quote and shows the all-in cost', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'Example' }).click();
+  await page.getByRole('button', { name: 'Example', exact: true }).click();
   await page.getByRole('tab', { name: 'Cost Sheet' }).click();
   await expect(page.getByTestId('all-in')).toHaveText(ALL_IN);
 });
 
 test('copied share link restores the same all-in cost in a new page', async ({ page, context }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'Example' }).click();
+  await page.getByRole('button', { name: 'Example', exact: true }).click();
   await page.getByRole('tab', { name: 'Cost Sheet' }).click();
   await expect(page.getByTestId('all-in')).toHaveText(ALL_IN);
   await page.getByRole('button', { name: 'Copy link' }).click();

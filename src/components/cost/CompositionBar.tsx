@@ -1,14 +1,16 @@
 import { formatINRWords, formatPct } from '@/engine/format';
 import type { CostResult } from '@/engine/types';
+import { Tooltip } from '@/components/ui/Tooltip';
 
 /** Gold + greys only (§8). The 4th segment is hatched so it never relies on colour alone. */
 export function CompositionBar({ cost }: { cost: CostResult }) {
   const parts = [
-    { label: 'Agreement value (base, FRC, PLC…)', v: cost.agreementValue, bg: 'var(--color-gold)' },
-    { label: 'Other builder charges', v: cost.otherChargesTotal, bg: '#8c887e' },
-    { label: 'GST', v: cost.gstOnAgreementValue + cost.otherChargesGst, bg: '#4a4843' },
+    { label: 'Agreement value (base, FRC, PLC…)', tip: 'av', v: cost.agreementValue, bg: 'var(--color-gold)' },
+    { label: 'Other builder charges', tip: 'blockB', v: cost.otherChargesTotal, bg: '#8c887e' },
+    { label: 'GST', tip: 'gst', v: cost.gstOnAgreementValue + cost.otherChargesGst, bg: '#4a4843' },
     {
       label: 'Stamp duty + registration',
+      tip: 'governmentTotal',
       v: cost.governmentTotal,
       bg: 'repeating-linear-gradient(45deg,#8c887e 0 4px,#2a2a2a 4px 8px)',
     },
@@ -22,12 +24,12 @@ export function CompositionBar({ cost }: { cost: CostResult }) {
           <div key={p.label} style={{ width: `${(p.v / total) * 100}%`, background: p.bg }} />
         ))}
       </div>
-      <ul className="mt-2 grid grid-cols-1 gap-1 text-xs sm:grid-cols-2">
+      <ul className="mt-3 grid grid-cols-1 gap-1.5 text-sm">
         {parts.map((p) => (
           <li key={p.label} className="flex items-center gap-2 text-text-muted">
             <span aria-hidden className="inline-block h-2.5 w-2.5 shrink-0 rounded-sm border border-border" style={{ background: p.bg }} />
-            <span className="flex-1">{p.label}</span>
-            <span className="text-text">{formatINRWords(p.v)} · {formatPct((p.v / total) * 100, 1)}</span>
+            <span className="flex flex-1 items-center">{p.label}<Tooltip term={p.tip} /></span>
+            <span className="whitespace-nowrap text-text">{formatINRWords(p.v)} · {formatPct((p.v / total) * 100, 1)}</span>
           </li>
         ))}
       </ul>

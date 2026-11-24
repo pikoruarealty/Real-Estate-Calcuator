@@ -14,17 +14,18 @@ function registerFonts(origin: string) {
   if (fontsRegistered) return;
   fontsRegistered = true;
   Font.register({
-    family: 'Inter',
+    family: 'Geist',
     fonts: [
-      { src: `${origin}/fonts/Inter-Regular.ttf`, fontWeight: 400 },
-      { src: `${origin}/fonts/Inter-Bold.ttf`, fontWeight: 700 },
+      { src: `${origin}/fonts/Geist-Regular.ttf`, fontWeight: 400 },
+      { src: `${origin}/fonts/Geist-SemiBold.ttf`, fontWeight: 600 },
+      { src: `${origin}/fonts/Geist-Bold.ttf`, fontWeight: 700 },
     ],
   });
   Font.registerHyphenationCallback((w) => [w]); // never hyphenate
 }
 
 const s = StyleSheet.create({
-  page: { fontFamily: 'Inter', fontSize: 8.5, color: '#1a1a1a', paddingBottom: 48 },
+  page: { fontFamily: 'Geist', fontSize: 8.5, color: '#1a1a1a', paddingBottom: 48 },
   band: { backgroundColor: '#0B0B0B', paddingHorizontal: 36, paddingVertical: 20 },
   brand: { color: GOLD_BRIGHT, fontSize: 18, fontWeight: 700 },
   tag: { color: '#9A968C', fontSize: 8, marginTop: 3 },

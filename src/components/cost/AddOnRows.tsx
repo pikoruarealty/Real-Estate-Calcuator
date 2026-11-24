@@ -42,7 +42,7 @@ export function AddOnRows({
           onDelete={() => onChange(rows.filter((x) => x.id !== r.id))}
         />
       ))}
-      <Button variant="secondary" onClick={addCustom} className="w-full">+ Add custom charge</Button>
+      <Button variant="secondary" onClick={addCustom} className="w-full">+ Add another charge from my quote</Button>
     </div>
   );
 }

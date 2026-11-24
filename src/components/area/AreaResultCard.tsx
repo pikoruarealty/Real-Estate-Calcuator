@@ -20,15 +20,15 @@ export function AreaResultCard({ area, vigha }: { area: AreaResult; vigha: Vigha
     { label: 'Carpet', v: area.carpetSqft, tip: 'carpet' },
     { label: 'RERA area', v: area.reraAreaSqft, tip: 'reraArea' },
     { label: 'Super built-up', v: area.sbuSqft, tip: 'sbu' },
-    { label: 'Common area', v: area.commonAreaSqft, tip: '' },
+    { label: 'Common area', v: area.commonAreaSqft, tip: 'commonArea' },
   ];
   const show = (v: number | null, to: 'sqft' | 'sqm' | 'sqyd') => (v == null ? '—' : formatAreaNumber(convert(v, 'sqft', to, vigha)));
   const empty = area.carpetSqft == null && area.sbuSqft == null;
 
   return (
-    <Card title="Your true areas">
+    <Card title="Your true areas" subtitle="What you actually get vs. what you pay for.">
       {empty ? (
-        <p className="text-sm text-text-muted">Enter an area above to see carpet, RERA and super built-up areas in sq ft, sq m and sq yd.</p>
+        <p className="text-sm leading-relaxed text-text-muted">Enter an area to see the carpet area (what you use), the super built-up area (what you usually pay for) and the difference between them, in sq ft, sq m and sq yd.</p>
       ) : (
         <div className="space-y-4">
           <div className="overflow-x-auto">
@@ -36,9 +36,9 @@ export function AreaResultCard({ area, vigha }: { area: AreaResult; vigha: Vigha
               <thead>
                 <tr className="text-left text-xs text-text-muted">
                   <th scope="col" className="py-1 pr-2 font-medium">Area</th>
-                  <th scope="col" className="px-2 py-1 text-right font-medium">Sq ft</th>
-                  <th scope="col" className="px-2 py-1 text-right font-medium">Sq m</th>
-                  <th scope="col" className="py-1 pl-2 text-right font-medium">Sq yd</th>
+                  <th scope="col" className="px-2 py-1 text-right font-medium">Sq ft<Tooltip term="u_sqft" /></th>
+                  <th scope="col" className="px-2 py-1 text-right font-medium">Sq m<Tooltip term="u_sqm" /></th>
+                  <th scope="col" className="py-1 pl-2 text-right font-medium">Sq yd<Tooltip term="u_sqyd" /></th>
                 </tr>
               </thead>
               <tbody>
@@ -56,11 +56,23 @@ export function AreaResultCard({ area, vigha }: { area: AreaResult; vigha: Vigha
           <div className="grid grid-cols-3 gap-2">
             <Chip label="Loading" value={area.loadingPct} tip="loading" />
             <Chip label="Kapat" value={area.kapatPct} tip="kapat" />
-            <Chip label="Efficiency" value={area.efficiencyPct} tip="carpet" />
+            <Chip label="Efficiency" value={area.efficiencyPct} tip="efficiency" />
           </div>
-          {area.efficiencyPct != null && (
-            <p className="rounded-lg bg-surface-2 p-3 text-sm text-text">
-              For every 100 sq ft you pay for, you use <strong className="text-gold">{formatAreaNumber(area.efficiencyPct)}</strong> sq ft.
+          {area.efficiencyPct != null && area.carpetSqft != null && area.sbuSqft != null && (
+            <div className="space-y-1.5 rounded-lg bg-surface-2 p-3 text-sm leading-relaxed text-text">
+              <p>
+                For every 100 sq ft you pay for, you use <strong className="text-gold">{formatAreaNumber(area.efficiencyPct)}</strong> sq ft.
+              </p>
+              <p className="text-text-muted">
+                You can actually use <strong className="text-text">{formatAreaNumber(area.carpetSqft)} sq ft</strong>, but you are charged for{' '}
+                <strong className="text-text">{formatAreaNumber(area.sbuSqft)} sq ft</strong>. The other{' '}
+                {formatAreaNumber(area.sbuSqft - area.carpetSqft)} sq ft is your share of lobbies, lifts, stairs and amenities.
+              </p>
+            </div>
+          )}
+          {area.carpetSqft != null && area.sbuSqft == null && (
+            <p className="rounded-lg bg-surface-2 p-3 text-sm leading-relaxed text-text-muted">
+              Add the loading or kapat % (or switch to “Both”) to see the super built-up area. Most Ahmedabad builders charge on it.
             </p>
           )}
         </div>

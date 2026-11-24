@@ -4,14 +4,16 @@ import { formatINR, formatPct } from '@/engine/format';
 import type { CostResult } from '@/engine/types';
 import { buildSheet, type SheetSection } from '@/lib/sheet';
 import { Tooltip } from '@/components/ui/Tooltip';
+import { lineTipKey } from '@/content/glossary';
 
 const cell = 'px-2 py-2 text-right align-top whitespace-nowrap';
 
-function BlockHeader({ title, tip }: { title: string; tip?: string }) {
+function BlockHeader({ title, sub, tip }: { title: string; sub?: string; tip?: string }) {
   return (
     <tr>
-      <th scope="colgroup" colSpan={5} className="bg-surface-2 px-2 py-2 text-left text-xs font-semibold uppercase tracking-wide text-gold">
-        {title}{tip && <Tooltip term={tip} />}
+      <th scope="colgroup" colSpan={5} className="bg-surface-2 px-2 py-2 text-left">
+        <span className="flex items-center text-xs font-semibold uppercase tracking-wide text-gold">{title}{tip && <Tooltip term={tip} />}</span>
+        {sub && <span className="block text-xs font-normal normal-case text-text-muted">{sub}</span>}
       </th>
     </tr>
   );
@@ -24,6 +26,7 @@ function Rows({ section, showGst }: { section: SheetSection; showGst: boolean })
         <tr key={l.key} className="border-b border-border/60">
           <th scope="row" className="px-2 py-2 text-left align-top font-normal">
             {l.label}
+            <Tooltip term={lineTipKey(l.key)} />
             {l.refundable && <span className="ml-1.5 rounded border border-gold-muted px-1 text-[10px] text-gold-muted">refundable</span>}
             <span className="block text-xs text-text-muted @2xl:hidden">{l.calc}</span>
           </th>
@@ -44,10 +47,10 @@ function Rows({ section, showGst }: { section: SheetSection; showGst: boolean })
   );
 }
 
-function Subtotal({ label, s, gstPct }: { label: string; s: { amount: number; gst: number; total: number }; gstPct?: number }) {
+function Subtotal({ label, s, gstPct, tip }: { label: string; s: { amount: number; gst: number; total: number }; gstPct?: number; tip?: string }) {
   return (
     <tr className="border-b border-border bg-surface-2/60 font-semibold">
-      <th scope="row" className="px-2 py-2 text-left">{label}</th>
+      <th scope="row" className="px-2 py-2 text-left">{label}{tip && <Tooltip term={tip} />}</th>
       <td className="hidden @2xl:table-cell" />
       <td className={cell}>{formatINR(s.amount)}</td>
       <td className={cell}>
@@ -75,32 +78,32 @@ export function CostSheetTable({ cost }: { cost: CostResult }) {
           </tr>
         </thead>
         <tbody>
-          <BlockHeader title="A · Agreement value" tip="av" />
+          <BlockHeader title="A · Agreement value" sub="The price written in your sale agreement. GST is added on it." tip="blockA" />
           <Rows section={s.a} showGst={false} />
-          <Subtotal label="Agreement value + GST" s={s.a} gstPct={cost.propertyGstPct} />
+          <Subtotal label="Agreement value + GST" s={s.a} gstPct={cost.propertyGstPct} tip="gstAv" />
 
           {s.b.rows.length > 0 && (
             <>
-              <BlockHeader title="B · Other builder charges" />
+              <BlockHeader title="B · Other builder charges" sub="Paid to the builder separately, each with its own GST." tip="blockB" />
               <Rows section={s.b} showGst />
               <Subtotal label="Other charges subtotal" s={s.b} />
             </>
           )}
 
           <tr className="border-b border-border font-semibold">
-            <th scope="row" className="px-2 py-2 text-left">Payable to builder (A + B)</th>
+            <th scope="row" className="px-2 py-2 text-left">Payable to builder (A + B)<Tooltip term="payableToBuilder" /></th>
             <td className="hidden @2xl:table-cell" />
             <td colSpan={2} />
             <td className={cell}>{formatINR(cost.payableToBuilder)}</td>
           </tr>
 
-          <BlockHeader title="C · Government charges" tip="sv" />
+          <BlockHeader title="C · Government charges" sub="Paid to the Gujarat government when you register the home." tip="governmentTotal" />
           <Rows section={s.c} showGst={false} />
-          <Subtotal label="Government total" s={s.c} />
+          <Subtotal label="Government total" s={s.c} tip="governmentTotal" />
         </tbody>
         <tfoot>
           <tr className="bg-gold/10">
-            <th scope="row" className="px-2 py-3 text-left font-display text-lg text-gold">All-in cost</th>
+            <th scope="row" className="px-2 py-3 text-left font-display text-lg text-gold">All-in cost (A + B + C)<Tooltip term="allIn" /></th>
             <td className="hidden @2xl:table-cell" />
             <td colSpan={2} />
             <td className="px-2 py-3 text-right font-display text-lg text-gold">{formatINR(cost.allInCost)}</td>

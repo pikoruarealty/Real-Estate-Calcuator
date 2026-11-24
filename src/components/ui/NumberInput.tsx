@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useId, useRef, useState } from 'react';
+import { formatINRWords } from '@/engine/format';
 import { Tooltip } from './Tooltip';
 
 const fmt = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 4 });
@@ -29,12 +30,14 @@ export interface NumberInputProps {
   min?: number;
   readOnly?: boolean;
   hideLabel?: boolean;
+  /** money field: echo the value as ₹ lakh / crore under the input */
+  words?: boolean;
 }
 
 /** Accepts commas, formats en-IN on blur, never emits NaN. */
 export function NumberInput({
   label, value, onChange, tip, prefix, suffix, error, hint, placeholder, className = '',
-  emptyAsZero, min, readOnly, hideLabel,
+  emptyAsZero, min, readOnly, hideLabel, words,
 }: NumberInputProps) {
   const id = useId();
   const [text, setText] = useState(value == null ? '' : fmt.format(value));
@@ -47,13 +50,15 @@ export function NumberInput({
   const localErr = text !== '' && parse(text) === 'invalid' ? 'Enter a valid number' : undefined;
   const minErr = value != null && min != null && value < min ? `Must be at least ${min}` : undefined;
   const err = error ?? localErr ?? minErr;
+  const echo = words && value != null && Math.abs(value) >= 1e5 ? `= ${formatINRWords(value)}` : undefined;
+  const helper = [echo, hint].filter(Boolean).join(' · ');
 
   return (
     <div className={className}>
-      <label htmlFor={id} className={hideLabel ? 'sr-only' : 'mb-1.5 block text-xs font-medium text-text-muted'}>
-        {label}
-        {tip && <Tooltip term={tip} />}
-      </label>
+      <div className={hideLabel ? 'sr-only' : 'mb-1.5 flex min-h-6 items-center text-[13px] font-medium text-text-muted'}>
+        <label htmlFor={id}>{label}</label>
+        {tip && !hideLabel && <Tooltip term={tip} />}
+      </div>
       <div
         className={`flex min-h-10 items-center rounded-lg border bg-surface-2 px-3 focus-within:border-gold ${
           err ? 'border-error' : 'border-border hover:border-gold-muted'
@@ -69,7 +74,7 @@ export function NumberInput({
           readOnly={readOnly}
           placeholder={placeholder}
           aria-invalid={!!err}
-          aria-describedby={err || hint ? `${id}-msg` : undefined}
+          aria-describedby={err || helper ? `${id}-msg` : undefined}
           onFocus={() => (focused.current = true)}
           onChange={(e) => {
             const s = e.target.value;
@@ -87,9 +92,9 @@ export function NumberInput({
         />
         {suffix && <span className="ml-1.5 whitespace-nowrap text-sm text-text-muted">{suffix}</span>}
       </div>
-      {(err || hint) && (
-        <p id={`${id}-msg`} className={`mt-1 text-xs ${err ? 'text-error' : 'text-text-muted'}`}>
-          {err ?? hint}
+      {(err || helper) && (
+        <p id={`${id}-msg`} className={`mt-1 text-xs leading-relaxed ${err ? 'text-error' : 'text-text-muted'}`}>
+          {err ?? (echo ? <><span className="font-medium text-gold-muted">{echo}</span>{hint ? ` · ${hint}` : ''}</> : hint)}
         </p>
       )}
     </div>

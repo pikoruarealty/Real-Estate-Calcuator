@@ -4,7 +4,7 @@ import { useId, type ReactNode } from 'react';
 import { Tooltip } from './Tooltip';
 
 export function Select({
-  label, value, onChange, children, tip, className = '', hideLabel = false,
+  label, value, onChange, children, tip, className = '', hideLabel = false, hint,
 }: {
   label: string;
   value: string | number;
@@ -13,11 +13,12 @@ export function Select({
   tip?: string;
   className?: string;
   hideLabel?: boolean;
+  hint?: string;
 }) {
   const id = useId();
   return (
     <div className={className}>
-      <div className={hideLabel ? 'sr-only' : 'mb-1.5 flex items-center text-xs font-medium text-text-muted'}>
+      <div className={hideLabel ? 'sr-only' : 'mb-1.5 flex min-h-6 items-center text-[13px] font-medium text-text-muted'}>
         <label htmlFor={id}>{label}</label>
         {tip && !hideLabel && <Tooltip term={tip} />}
       </div>
@@ -29,6 +30,7 @@ export function Select({
       >
         {children}
       </select>
+      {hint && <p className="mt-1 text-xs leading-relaxed text-text-muted">{hint}</p>}
     </div>
   );
 }
