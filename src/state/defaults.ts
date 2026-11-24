@@ -81,7 +81,7 @@ export function defaultInput(): CalculatorInput {
   };
 }
 
-/** Fixture T1 (§12): 3BHK, under construction, Ahmedabad. Used by the "Example" button. */
+/** Fixture T1 (§12): 3BHK, under construction. Used by the "Example" button. */
 export function exampleInput(): CalculatorInput {
   const d = defaultInput();
   d.area = { ...d.area, knownType: 'carpet', value: 1200, unit: 'sqft', mode: 'loading', pct: 35 };

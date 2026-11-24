@@ -97,7 +97,7 @@ export function CostSheetTable({ cost }: { cost: CostResult }) {
             <td className={cell}>{formatINR(cost.payableToBuilder)}</td>
           </tr>
 
-          <BlockHeader title="C · Government charges" sub="Paid to the Gujarat government when you register the home." tip="governmentTotal" />
+          <BlockHeader title="C · Government charges" sub="Paid to the government when you register the home." tip="governmentTotal" />
           <Rows section={s.c} showGst={false} />
           <Subtotal label="Government total" s={s.c} tip="governmentTotal" />
         </tbody>

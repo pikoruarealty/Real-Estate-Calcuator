@@ -7,15 +7,15 @@ import './globals.css';
 // latin-ext carries the ₹ glyph
 const geist = Geist({ subsets: ['latin', 'latin-ext'], variable: '--font-geist', display: 'swap' });
 
-const title = 'Ahmedabad Real Estate Calculator: true area, all-in cost & EMI';
+const title = 'Real Estate Calculator: true area, all-in cost & EMI';
 const description =
-  'Turn any Ahmedabad property quote into carpet and super built-up area, a full cost sheet with GST, stamp duty and registration, plus loan eligibility and EMI. Free, no login.';
+  'Turn any property quote into carpet and super built-up area, a full cost sheet with GST, stamp duty and registration, plus loan eligibility and EMI. Free, no login.';
 
 export const metadata: Metadata = {
   metadataBase: new URL(BRAND.siteUrl),
   title,
   description,
-  keywords: ['Ahmedabad real estate calculator', 'carpet area', 'super built-up', 'stamp duty Gujarat', 'GST on flat', 'EMI calculator', 'kapat', 'loading', 'Jantri'],
+  keywords: ['real estate calculator', 'carpet area', 'super built-up', 'stamp duty', 'GST on flat', 'EMI calculator', 'kapat', 'loading', 'Jantri'],
   openGraph: { title, description, type: 'website', url: BRAND.siteUrl, siteName: BRAND.name, locale: 'en_IN' },
   twitter: { card: 'summary_large_image', title, description },
   icons: { icon: '/logo.svg' },

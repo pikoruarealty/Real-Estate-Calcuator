@@ -1,6 +1,6 @@
-# Ahmedabad Real Estate Calculator
+# Real Estate Calculator
 
-Free, mobile-first calculator that turns an Ahmedabad property quote into true areas, an all-in cost sheet
+Free, mobile-first calculator that turns a property quote into true areas, an all-in cost sheet
 (GST, stamp duty, registration, TDS info) and a loan/EMI view. Built from `real-estate-calculator-SPEC.md`.
 
 ## Stack

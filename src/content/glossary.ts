@@ -35,7 +35,7 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
   reraArea: {
     group: A,
     term: 'RERA area',
-    tip: 'Carpet area + balcony + wash area + terrace. Many Ahmedabad brochures print this number as “RERA area”, so it looks bigger than the pure carpet area.',
+    tip: 'Carpet area + balcony + wash area + terrace. Many brochures print this number as “RERA area”, so it looks bigger than the pure carpet area.',
   },
   sbu: {
     group: A,
@@ -74,7 +74,7 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
   areaUnit: {
     group: A, hidden: true,
     term: 'Unit',
-    tip: 'Flats are usually measured in sq ft. Plots in Gujarat often use sq yd (vaar / gaj). Farm land uses guntha, acre or vigha.',
+    tip: 'Flats are usually measured in sq ft. Plots often use sq yd (vaar / gaj). Farm land uses guntha, acre or vigha.',
   },
   converter: {
     group: A, hidden: true,
@@ -88,19 +88,19 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
   },
   u_sqft: { group: A, term: 'Square foot (sq ft)', tip: 'The most common unit for flats in India. A typical bedroom is about 120–150 sq ft.' },
   u_sqm: { group: A, term: 'Square metre (sq m)', tip: 'Metric unit used in government records and Jantri. 1 sq m ≈ 10.76 sq ft.' },
-  u_sqyd: { group: A, term: 'Square yard (vaar / gaj)', tip: 'Common for plots in Gujarat. 1 sq yd = 9 sq ft.' },
-  u_guntha: { group: A, term: 'Guntha', tip: 'Gujarat / Maharashtra land unit. 1 guntha = 1,089 sq ft; 40 guntha = 1 acre.' },
+  u_sqyd: { group: A, term: 'Square yard (vaar / gaj)', tip: 'Common for plots. 1 sq yd = 9 sq ft.' },
+  u_guntha: { group: A, term: 'Guntha', tip: 'Regional land unit. 1 guntha = 1,089 sq ft; 40 guntha = 1 acre.' },
   u_are: { group: A, term: 'Are', tip: 'Metric land unit = 100 sq m. Seen on some land records.' },
   u_acre: { group: A, term: 'Acre', tip: 'Land unit = 43,560 sq ft = 40 guntha.' },
   u_hectare: { group: A, term: 'Hectare', tip: 'Metric land unit = 10,000 sq m ≈ 2.47 acre.' },
-  u_vigha: { group: A, term: 'Vigha / bigha', tip: 'Traditional land unit. 17,424 sq ft (16 guntha) in Ahmedabad and North Gujarat, but its size changes from region to region.', extra: 'For anything legal, rely on guntha or sq m from the 7/12 record.' },
+  u_vigha: { group: A, term: 'Vigha / bigha', tip: 'Traditional land unit. 17,424 sq ft (16 guntha), but its size changes from region to region.', extra: 'For anything legal, rely on guntha or sq m from the 7/12 record.' },
   u_cent: { group: A, term: 'Cent', tip: 'Used in Kerala and Tamil Nadu. 1 cent = 1/100 acre = 435.6 sq ft.' },
   u_ground: { group: A, term: 'Ground', tip: 'Used in Chennai. 1 ground = 2,400 sq ft.' },
   u_marla: { group: A, term: 'Marla', tip: 'Used in Punjab and Haryana. Taken here as 272.25 sq ft (size varies locally).' },
   u_kanal: { group: A, term: 'Kanal', tip: 'Used in Punjab and Haryana. 1 kanal = 20 marla = 5,445 sq ft.' },
   vaar: { group: A, term: 'Vaar / gaj', tip: 'Local names for a square yard = 9 sq ft.' },
   guntha: { group: A, term: 'Guntha', tip: '1,089 sq ft; 40 guntha = 1 acre.' },
-  vigha: { group: A, term: 'Vigha / bigha', tip: 'Land unit; 17,424 sq ft in Ahmedabad, but it varies by region.' },
+  vigha: { group: A, term: 'Vigha / bigha', tip: 'Land unit; 17,424 sq ft in some regions, but it varies by region.' },
 
   // ── Price & builder charges ─────────────────────────────────────────────
   propertyType: {
@@ -122,7 +122,7 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
   rateBasis: {
     group: P, hidden: true,
     term: 'Rate is on',
-    tip: 'Most Ahmedabad builders quote per super built-up sq ft. If your quote says “per carpet sq ft”, switch to Carpet.',
+    tip: 'Most builders quote per super built-up sq ft. If your quote says “per carpet sq ft”, switch to Carpet.',
   },
   basePrice: {
     group: P,
@@ -159,7 +159,7 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
   buyerType: {
     group: T, hidden: true,
     term: 'Who will own the home',
-    tip: 'In Gujarat, a woman buying alone pays no registration fee, saving 1% of the property value. Men, joint buyers and companies pay the full fee.',
+    tip: 'In some states, a woman buying alone pays no registration fee, saving 1% of the property value. Men, joint buyers and companies pay the full fee.',
   },
   addOns: {
     group: P,
@@ -266,8 +266,8 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
   jantri: {
     group: T,
     term: 'Jantri',
-    tip: 'The Gujarat government’s minimum rate for property in each area (also called the ready reckoner rate). Stamp duty is charged on the higher of your agreement value and the Jantri value.',
-    extra: 'Look it up on the GARVI website, or ask the builder.',
+    tip: 'The government’s minimum rate for property in each area (also called the ready reckoner rate). Stamp duty is charged on the higher of your agreement value and the Jantri value.',
+    extra: 'Look it up on your state’s official portal, or ask the builder.',
   },
   jantriValue: {
     group: T, hidden: true,
@@ -277,7 +277,7 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
   jantriRate: {
     group: T, hidden: true,
     term: 'Jantri rate',
-    tip: 'Government rate per sq m for your area, from GARVI. We multiply it by the area to get the Jantri value.',
+    tip: 'Government rate per sq m for your area, from your state’s official portal. We multiply it by the area to get the Jantri value.',
   },
   jantriArea: {
     group: T, hidden: true,
@@ -317,7 +317,7 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
   stampDuty: {
     group: T,
     term: 'Stamp duty',
-    tip: 'Tax paid to the Gujarat government when you register your sale deed. 4.9% (3.5% + 40% surcharge) of the stamp value.',
+    tip: 'Tax paid to the government when you register your sale deed. 4.9% (3.5% + 40% surcharge) of the stamp value.',
     extra: 'Paid by you, not the builder. Banks usually don’t lend for it, so budget for it from your own savings.',
   },
   registration: {
@@ -355,7 +355,7 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
   governmentTotal: {
     group: T,
     term: 'Government charges',
-    tip: 'Stamp duty + registration fee, paid to the Gujarat government when you register the sale deed.',
+    tip: 'Stamp duty + registration fee, paid to the government when you register the sale deed.',
   },
   effCarpet: {
     group: P,

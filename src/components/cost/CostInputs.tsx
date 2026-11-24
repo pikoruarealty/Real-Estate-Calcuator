@@ -145,9 +145,6 @@ export function CostInputs({
               <NumberInput label="Area" tip="jantriArea" suffix="sq m" value={cost.jantriAreaSqm} onChange={(v) => onChange({ jantriAreaSqm: v })} min={0}
                 placeholder={C ? (C / SQFT_PER_SQM).toFixed(2) : undefined} />
             </div>
-            <a href="https://garvi.gujarat.gov.in" target="_blank" rel="noopener noreferrer" className="inline-block text-[13px] text-gold hover:underline">
-              Look up Jantri on GARVI ↗
-            </a>
           </section>
 
           <section className="space-y-4">
@@ -171,7 +168,7 @@ export function CostInputs({
 
           <section>
             <Sub tip="advanced">Tax rates</Sub>
-            <p className="mb-3 text-[13px] text-text-muted">Leave blank for today’s Gujarat rates.</p>
+            <p className="mb-3 text-[13px] text-text-muted">Leave blank to use the current rates.</p>
             <div className="grid grid-cols-2 gap-2">
               <NumberInput label="Stamp duty" tip="stampDuty" suffix="%" value={ov.stampDutyPct ?? null} placeholder={String(STAMP_DUTY_PCT)}
                 onChange={(v) => setOverride({ stampDutyPct: v ?? undefined })} min={0} />
