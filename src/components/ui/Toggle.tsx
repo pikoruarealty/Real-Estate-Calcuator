@@ -53,11 +53,22 @@ export function Switch({ label, checked, onChange, hint, tip }: { label: string;
     <div className="flex items-start">
     <label htmlFor={id} className="flex cursor-pointer items-start gap-3 text-sm text-text">
       <input id={id} type="checkbox" role="switch" checked={checked} onChange={(e) => onChange(e.target.checked)} className="peer sr-only" />
-      <span className="mt-0.5 inline-block h-5 w-9 shrink-0 rounded-full border border-border bg-bg p-0.5 transition peer-checked:border-gold peer-checked:bg-gold/30 peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-gold [&>span]:peer-checked:translate-x-4 [&>span]:peer-checked:bg-gold">
-        <span className="block h-3.5 w-3.5 rounded-full bg-text-muted transition" />
+      {/* Track + knob are styled from `checked` directly (no peer/child selector tricks). */}
+      <span
+        aria-hidden
+        className={`relative mt-px inline-flex h-6 w-11 shrink-0 items-center rounded-full border transition-colors peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-gold ${
+          checked ? 'border-gold bg-gold/30' : 'border-border bg-bg'
+        }`}
+      >
+        <span
+          className={`absolute left-0.5 h-[18px] w-[18px] rounded-full shadow transition-transform duration-150 ${
+            checked ? 'translate-x-5 bg-gold' : 'translate-x-0 bg-text-muted'
+          }`}
+        />
       </span>
-      <span>
+      <span className="pt-0.5">
         {label}
+        <span className={`ml-2 text-xs font-medium ${checked ? 'text-gold' : 'text-text-muted'}`}>{checked ? 'Yes' : 'No'}</span>
         {hint && <span className="block text-xs text-text-muted">{hint}</span>}
       </span>
     </label>

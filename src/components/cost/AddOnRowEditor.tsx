@@ -89,11 +89,11 @@ export function AddOnRowEditor({
             <option value="5">5%</option>
             <option value="18">18%</option>
           </Select>
-          <div className="flex flex-col justify-end gap-3">
-            <Switch label="Included in agreement value" tip="inAV" checked={row.inAgreementValue} onChange={(v) => onChange({ inAgreementValue: v })}
-              hint={row.inAgreementValue ? 'GST, stamp duty & registration apply' : 'Charged separately, outside the agreement'} />
-            <Switch label="Refundable" tip="refundable" checked={row.refundable} onChange={(v) => onChange({ refundable: v })} />
-          </div>
+        </div>
+        <div className="space-y-3 rounded-lg bg-surface-2/60 p-3">
+          <Switch label="Included in agreement value" tip="inAV" checked={row.inAgreementValue} onChange={(v) => onChange({ inAgreementValue: v })}
+            hint={row.inAgreementValue ? 'GST, stamp duty & registration apply to it' : 'Paid to the builder separately, outside the agreement'} />
+          <Switch label="Refundable" tip="refundable" checked={row.refundable} onChange={(v) => onChange({ refundable: v })} />
         </div>
         <div className="flex justify-end">
           <Button variant="ghost" onClick={onDelete} className="text-error hover:text-error" aria-label={`Delete ${row.name}`}>Delete charge</Button>
