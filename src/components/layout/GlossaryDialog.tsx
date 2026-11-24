@@ -28,13 +28,13 @@ export function GlossaryDialog({ open, onClose }: { open: boolean; onClose: () =
       onClose={onClose}
       onClick={(e) => e.target === ref.current && onClose()}
       aria-labelledby="glossary-title"
-      className="m-auto h-[min(85vh,48rem)] w-[min(40rem,calc(100vw-1.5rem))] rounded-xl border border-border bg-surface p-0 text-text backdrop:bg-black/70"
+      className="m-auto h-[min(85vh,48rem)] w-[min(40rem,calc(100vw-1.5rem))] rounded-3xl bg-surface p-0 text-text ring-1 ring-white/10 backdrop:bg-black/70 backdrop:backdrop-blur-sm"
     >
       <div className="flex h-full flex-col">
-        <div className="border-b border-border p-4 sm:p-5">
+        <div className="p-5 pb-3 sm:p-6 sm:pb-3">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h2 id="glossary-title" className="font-display text-2xl">Glossary</h2>
+              <h2 id="glossary-title" className="text-2xl font-semibold tracking-tight">Glossary</h2>
               <p className="text-sm text-text-muted">Every property word you’ll hear, in plain English.</p>
             </div>
             <button type="button" aria-label="Close glossary" onClick={onClose} className="flex h-9 w-9 items-center justify-center rounded-lg text-text-muted hover:text-text">✕</button>
@@ -46,20 +46,20 @@ export function GlossaryDialog({ open, onClose }: { open: boolean; onClose: () =
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Search, e.g. kapat, stamp duty, EMI"
-            className="mt-3 min-h-10 w-full rounded-lg border border-border bg-surface-2 px-3 text-sm placeholder:text-text-muted/60 focus:border-gold"
+            className="mt-4 h-12 w-full rounded-2xl bg-surface-2 px-4 text-base ring-1 ring-transparent placeholder:text-text-muted/50 focus:outline-none focus-visible:ring-gold/70 sm:text-[15px]"
           />
         </div>
-        <div className="flex-1 overflow-y-auto p-4 sm:p-5">
+        <div className="flex-1 overflow-y-auto px-5 pb-6 sm:px-6">
           {GLOSSARY_GROUPS.map((g) => {
             const list = entries.filter(([, e]) => e.group === g);
             if (!list.length) return null;
             return (
               <section key={g} className="mb-6">
-                <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-gold">{g}</h3>
-                <dl className="space-y-3">
+                <h3 className="mb-3 mt-2 text-xs font-semibold uppercase tracking-wider text-gold">{g}</h3>
+                <dl className="space-y-2">
                   {list.map(([k, e]) => (
-                    <div key={k} className="rounded-lg border border-border bg-bg p-3">
-                      <dt className="text-sm font-semibold">{e.term}</dt>
+                    <div key={k} className="rounded-2xl bg-white/[0.03] p-4">
+                      <dt className="text-[15px] font-semibold">{e.term}</dt>
                       <dd className="mt-1 text-sm leading-relaxed text-text-muted">
                         {e.tip}
                         {e.extra && <span className="mt-1.5 block text-text-muted/90">{e.extra}</span>}

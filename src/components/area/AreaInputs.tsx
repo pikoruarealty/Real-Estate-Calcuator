@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { GUJARAT_UNITS, OTHER_STATE_UNITS, UNIT_LABELS, VIGHA_VARIANTS } from '@/engine/config';
 import { validateArea } from '@/engine/areas';
 import { formatPct } from '@/engine/format';
@@ -23,53 +24,53 @@ export function UnitSelect({ value, onChange, label = 'Unit', hideLabel = true }
   );
 }
 
-const KNOWN: { value: KnownAreaType; label: string }[] = [
+const KNOWN: { value: KnownAreaType; label: string; short?: string }[] = [
   { value: 'carpet', label: 'Carpet' },
-  { value: 'sbu', label: 'Super built-up' },
-  { value: 'reraArea', label: 'RERA area' },
+  { value: 'sbu', label: 'Super built-up', short: 'SBU' },
+  { value: 'reraArea', label: 'RERA' },
   { value: 'carpetAndSbu', label: 'Both' },
 ];
 
 const KNOWN_HINT: Record<KnownAreaType, string> = {
-  carpet: 'Carpet area is the usable space inside your walls. It is on the RERA certificate and in the sale agreement.',
-  sbu: 'Super built-up includes your share of lobbies, lifts and stairs. It is the area most builders price on.',
-  reraArea: 'RERA area = carpet + balcony + wash + terrace. Add those below so we can work out the pure carpet area.',
-  carpetAndSbu: 'Best choice: with both numbers we can work out the exact loading for you.',
+  carpet: 'The usable space inside your walls. It’s on the RERA certificate.',
+  sbu: 'Includes your share of lobbies, lifts and stairs. Most quotes use this.',
+  reraArea: 'Carpet + balcony + wash + terrace. Add those below.',
+  carpetAndSbu: 'Most accurate. We’ll work out the loading for you.',
 };
 
 export function AreaInputs({ area, result, onChange }: { area: AreaInput; result: AreaResult; onChange: (p: Partial<AreaInput>) => void }) {
   const errors = validateArea(area);
   const both = area.knownType === 'carpetAndSbu';
+  const [extrasOpen, setExtrasOpen] = useState(area.balconySqft + area.washSqft + area.terraceSqft > 0 || area.knownType === 'reraArea');
   const valueLabel =
-    area.knownType === 'carpet' ? 'Carpet area' : area.knownType === 'sbu' ? 'Super built-up area' : area.knownType === 'reraArea' ? 'RERA area' : 'Carpet area';
+    area.knownType === 'sbu' ? 'Super built-up area' : area.knownType === 'reraArea' ? 'RERA area' : 'Carpet area';
   const tipKey = area.knownType === 'carpetAndSbu' ? 'carpet' : area.knownType;
-
   const otherPct = area.mode === 'loading' ? result.kapatPct : result.loadingPct;
   const otherName = area.mode === 'loading' ? 'kapat' : 'loading';
 
   return (
-    <Card title="How big is the home?" subtitle="Enter the area from your brochure or the builder’s quote. We’ll work out the rest.">
-      <div className="space-y-4">
+    <Card title="How big is the home?" subtitle="Use the number from your brochure or quote.">
+      <div className="space-y-5">
         <Segmented
-          label="Which area does your brochure or quote mention?"
+          label="Your brochure mentions"
           tip="knownType"
           value={area.knownType}
           options={KNOWN}
-          onChange={(v) => onChange({ knownType: v })}
+          onChange={(v) => {
+            onChange({ knownType: v });
+            if (v === 'reraArea') setExtrasOpen(true);
+          }}
           size="sm"
           hint={KNOWN_HINT[area.knownType]}
         />
 
-        <div className="grid grid-cols-[1fr_9.5rem] items-end gap-2">
-          <NumberInput label={valueLabel} tip={tipKey} value={area.value} onChange={(v) => onChange({ value: v })} error={errors.value} placeholder="e.g. 1,200" />
+        <div className="grid grid-cols-[1fr_8.5rem] items-end gap-2">
+          <NumberInput label={valueLabel} tip={tipKey} value={area.value} onChange={(v) => onChange({ value: v })} error={errors.value} placeholder="1,200" />
           <UnitSelect value={area.unit} onChange={(unit) => onChange({ unit })} />
         </div>
 
         {both && (
-          <div className="grid grid-cols-[1fr_9.5rem] items-end gap-2">
-            <NumberInput label="Super built-up (SBU) area" tip="sbu" value={area.sbuValue} onChange={(v) => onChange({ sbuValue: v })} error={errors.sbuValue} placeholder="e.g. 1,620" />
-            <p className="pb-2 text-xs text-text-muted">in the same unit</p>
-          </div>
+          <NumberInput label="Super built-up area" tip="sbu" value={area.sbuValue} onChange={(v) => onChange({ sbuValue: v })} error={errors.sbuValue} placeholder="1,620" suffix="same unit" />
         )}
 
         {area.unit === 'vigha' && (
@@ -81,46 +82,51 @@ export function AreaInputs({ area, result, onChange }: { area: AreaInput; result
         )}
 
         {!both && (
-          <div className="space-y-2">
-            <Segmented
-              label="Common area (ask the builder for either one)"
-              value={area.mode}
-              options={[{ value: 'loading', label: 'Loading %' }, { value: 'kapat', label: 'Kapat %' }]}
-              onChange={(mode) => onChange({ mode, pct: null })}
-              tip={area.mode}
-              size="sm"
-            />
+          <div>
+            <div className="mb-2 flex items-center justify-between gap-2 text-[13px] text-text-muted">
+              <span className="flex items-center">Common area<Tooltip term={area.mode} /></span>
+              <span role="radiogroup" aria-label="Common area is given as" className="flex rounded-full bg-surface-2 p-0.5 text-xs">
+                {(['loading', 'kapat'] as const).map((m) => (
+                  <button
+                    key={m}
+                    type="button"
+                    role="radio"
+                    aria-checked={area.mode === m}
+                    onClick={() => onChange({ mode: m, pct: null })}
+                    className={`min-h-7 rounded-full px-3 transition ${area.mode === m ? 'bg-white/10 text-text' : 'text-text-muted hover:text-text'}`}
+                  >
+                    {m === 'loading' ? 'Loading' : 'Kapat'}
+                  </button>
+                ))}
+              </span>
+            </div>
             <NumberInput
-              tip={area.mode}
               label={area.mode === 'loading' ? 'Loading %' : 'Kapat %'}
+              hideLabel
               suffix="%"
               value={area.pct}
               onChange={(pct) => onChange({ pct })}
               error={errors.pct}
-              placeholder={area.mode === 'loading' ? 'e.g. 35' : 'e.g. 25'}
-              hint={
-                otherPct != null
-                  ? `= ${formatPct(otherPct)} ${otherName}`
-                  : area.knownType === 'sbu'
-                    ? 'Needed to work out your carpet area.'
-                    : 'Needed to work out the super built-up area most builders charge on.'
-              }
+              placeholder={area.mode === 'loading' ? '35' : '25'}
+              hint={otherPct != null ? `= ${formatPct(otherPct)} ${otherName}` : 'Ask the builder. Needed to compare carpet and super built-up.'}
             />
           </div>
         )}
 
-        <details className="rounded-lg border border-border bg-bg px-3 py-2">
-          <summary className="flex min-h-8 items-center text-sm text-gold-muted hover:text-gold">
-            <span aria-hidden className="chev mr-2 text-xs text-text-muted">▶</span>Balcony, wash, terrace (sq ft) <span className="ml-1 text-text-muted">— optional</span>
-            <Tooltip term="extras" />
-          </summary>
-          <div className="mt-3 grid grid-cols-3 gap-2">
-            <NumberInput label="Balcony" emptyAsZero value={area.balconySqft || null} onChange={(v) => onChange({ balconySqft: v ?? 0 })} min={0} />
-            <NumberInput label="Wash" emptyAsZero value={area.washSqft || null} onChange={(v) => onChange({ washSqft: v ?? 0 })} min={0} />
-            <NumberInput label="Terrace" emptyAsZero value={area.terraceSqft || null} onChange={(v) => onChange({ terraceSqft: v ?? 0 })} min={0} />
+        {extrasOpen ? (
+          <div className="rounded-2xl bg-bg/60 p-4">
+            <p className="mb-3 flex items-center text-[13px] text-text-muted">Balcony, wash & terrace (sq ft)<Tooltip term="extras" /></p>
+            <div className="grid grid-cols-3 gap-2">
+              <NumberInput label="Balcony" emptyAsZero value={area.balconySqft || null} onChange={(v) => onChange({ balconySqft: v ?? 0 })} min={0} placeholder="0" />
+              <NumberInput label="Wash" emptyAsZero value={area.washSqft || null} onChange={(v) => onChange({ washSqft: v ?? 0 })} min={0} placeholder="0" />
+              <NumberInput label="Terrace" emptyAsZero value={area.terraceSqft || null} onChange={(v) => onChange({ terraceSqft: v ?? 0 })} min={0} placeholder="0" />
+            </div>
           </div>
-          <p className="mt-2 text-xs text-text-muted">RERA area = carpet + balcony + wash + terrace.</p>
-        </details>
+        ) : (
+          <button type="button" onClick={() => setExtrasOpen(true)} className="text-sm text-text-muted transition hover:text-gold">
+            + Add balcony, wash or terrace
+          </button>
+        )}
       </div>
     </Card>
   );

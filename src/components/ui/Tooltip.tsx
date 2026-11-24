@@ -89,12 +89,12 @@ export function Tooltip({ term, text, label, className = '' }: { term?: string; 
             setPinned(true);
           }
         }}
-        className="group/tip -my-1 ml-1 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full"
+        className="group/tip -my-1 ml-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full"
       >
         <span
           aria-hidden
-          className={`inline-flex h-[18px] w-[18px] items-center justify-center rounded-full border text-[11px] font-semibold not-italic leading-none transition ${
-            open ? 'border-gold bg-gold text-black' : 'border-gold-muted text-gold-muted group-hover/tip:border-gold group-hover/tip:text-gold'
+          className={`inline-flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-semibold not-italic leading-none transition ${
+            open ? 'bg-gold text-black' : 'bg-white/[0.07] text-text-muted/80 group-hover/tip:bg-gold/20 group-hover/tip:text-gold'
           }`}
         >
           i
@@ -106,12 +106,12 @@ export function Tooltip({ term, text, label, className = '' }: { term?: string; 
           role="tooltip"
           id={id}
           style={{ position: 'fixed', left: pos?.left ?? -9999, top: pos?.top, bottom: pos?.bottom, width: pos?.width ?? WIDTH }}
-          className="z-[60] rounded-xl border border-gold-muted/60 bg-surface-2 p-3.5 text-left text-[13px] font-normal normal-case leading-relaxed tracking-normal text-text shadow-2xl shadow-black/60"
+          className="z-[60] rounded-2xl bg-[#222] p-4 text-left text-[13px] font-normal normal-case leading-relaxed tracking-normal text-text shadow-2xl shadow-black/70 ring-1 ring-white/10"
           onPointerLeave={(e) => e.pointerType === 'mouse' && !pinned && setOpen(false)}
         >
-          {title && <strong className="mb-1 block text-sm font-semibold text-gold">{title}</strong>}
+          {title && <strong className="mb-1.5 block text-sm font-semibold text-gold">{title}</strong>}
           <span className="block">{body}</span>
-          {!text && entry?.extra && <span className="mt-2 block border-t border-border pt-2 text-text-muted">{entry.extra}</span>}
+          {!text && entry?.extra && <span className="mt-2.5 block rounded-xl bg-white/[0.04] px-3 py-2 text-text-muted">{entry.extra}</span>}
         </div>
       )}
     </span>

@@ -3,7 +3,7 @@
 @theme {
   --color-bg: #0b0b0b;
   --color-surface: #151515;
-  --color-surface-2: #1c1c1c;
+  --color-surface-2: #1d1d1d;
   --color-border: #2a2a2a;
   --color-gold: #d4af37;
   --color-gold-muted: #a8893a;
@@ -15,21 +15,27 @@
   --font-sans: var(--font-geist), system-ui, sans-serif;
 }
 
-html { color-scheme: dark; }
-body {
-  background: var(--color-bg);
-  color: var(--color-text);
-  font-family: var(--font-sans);
-  font-variant-numeric: tabular-nums;
-  -webkit-font-smoothing: antialiased;
+/* Base styles live in the base layer so Tailwind utilities can override them. */
+@layer base {
+  html { color-scheme: dark; -webkit-tap-highlight-color: transparent; }
+  body {
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: color-mix(in srgb, var(--color-gold) 35%, transparent); }
+  :focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; }
+  input[type="number"]::-webkit-inner-spin-button { display: none; }
+  summary { cursor: pointer; list-style: none; }
+  summary::-webkit-details-marker { display: none; }
 }
-*:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; border-radius: 4px; }
-input, select, textarea, button { font: inherit; }
-input[type="number"]::-webkit-inner-spin-button { display: none; }
-summary { cursor: pointer; }
-summary::-webkit-details-marker { display: none; }
-summary { list-style: none; }
-.chev { display: inline-block; transition: transform 150ms; }
-details[open] > summary .chev { transform: rotate(90deg); }
-.font-display { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: lining-nums tabular-nums; }
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+@layer utilities {
+  .font-display { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: lining-nums tabular-nums; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}

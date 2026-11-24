@@ -9,7 +9,7 @@ export function Segmented<T extends string | number>({
 }: {
   label: string;
   value: T;
-  options: { value: T; label: string; tip?: string }[];
+  options: { value: T; label: string; short?: string; tip?: string }[];
   onChange: (v: T) => void;
   tip?: string;
   size?: 'sm' | 'md';
@@ -18,11 +18,11 @@ export function Segmented<T extends string | number>({
   const id = useId();
   return (
     <div role="radiogroup" aria-labelledby={id}>
-      <div className="mb-1.5 flex min-h-6 items-center text-[13px] font-medium text-text-muted">
+      <div className="mb-2 flex min-h-5 items-center text-[13px] text-text-muted">
         <span id={id}>{label}</span>
         {tip && <Tooltip term={tip} />}
       </div>
-      <div className="flex w-full overflow-hidden rounded-lg border border-border bg-bg p-0.5">
+      <div className="flex w-full gap-1 rounded-full bg-surface-2 p-1">
         {options.map((o) => {
           const active = o.value === value;
           return (
@@ -32,16 +32,21 @@ export function Segmented<T extends string | number>({
               role="radio"
               aria-checked={active}
               onClick={() => onChange(o.value)}
-              className={`flex-1 rounded-md px-2 ${size === 'sm' ? 'py-1.5 text-xs' : 'py-2 text-sm'} transition ${
-                active ? 'bg-gold font-semibold text-black' : 'text-text-muted hover:text-text'
+              className={`min-h-10 min-w-0 flex-1 whitespace-nowrap rounded-full px-2 leading-tight transition ${size === 'sm' ? 'text-[13px]' : 'text-sm'} ${
+                active ? 'bg-gold font-semibold text-black shadow-sm' : 'text-text-muted hover:text-text'
               }`}
             >
-              {o.label}
+              {o.short ? (
+                <>
+                  <span aria-hidden className="sm:hidden">{o.short}</span>
+                  <span className="sr-only sm:not-sr-only">{o.label}</span>
+                </>
+              ) : o.label}
             </button>
           );
         })}
       </div>
-      {hint && <p className="mt-1.5 text-xs leading-relaxed text-text-muted">{hint}</p>}
+      {hint && <p className="mt-2 text-[13px] leading-relaxed text-text-muted">{hint}</p>}
     </div>
   );
 }
@@ -57,7 +62,7 @@ export function Switch({ label, checked, onChange, hint, tip }: { label: string;
       <span
         aria-hidden
         className={`relative mt-px inline-flex h-6 w-11 shrink-0 items-center rounded-full border transition-colors peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-gold ${
-          checked ? 'border-gold bg-gold/30' : 'border-border bg-bg'
+          checked ? 'border-gold/60 bg-gold/25' : 'border-white/10 bg-surface-2'
         }`}
       >
         <span
@@ -69,7 +74,7 @@ export function Switch({ label, checked, onChange, hint, tip }: { label: string;
       <span className="pt-0.5">
         {label}
         <span className={`ml-2 text-xs font-medium ${checked ? 'text-gold' : 'text-text-muted'}`}>{checked ? 'Yes' : 'No'}</span>
-        {hint && <span className="block text-xs text-text-muted">{hint}</span>}
+        {hint && <span className="mt-0.5 block text-[13px] text-text-muted">{hint}</span>}
       </span>
     </label>
     {tip && <Tooltip term={tip} className="mt-[-1px]" />}

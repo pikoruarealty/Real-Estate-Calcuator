@@ -13,29 +13,33 @@ export function LoanTab({ onBack }: { onBack: () => void }) {
   const { input, result, setLoan } = useApp();
   return (
     <div>
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-6">
         <div className="min-w-0"><LoanInputs loan={input.loan} cost={result.cost} onChange={setLoan} /></div>
-        <div className="min-w-0 space-y-4 lg:sticky lg:top-4 lg:self-start">
+        <div className="min-w-0 space-y-4">
           {result.loan ? (
             <>
+              <LoanTiles loan={result.loan} tenureYears={input.loan.tenureYears} ratePct={input.loan.ratePct} />
               <WarningList warnings={result.warnings} codes={['LOAN_CAPPED', 'EMI_INCOME_HIGH']} />
-              <LoanTiles loan={result.loan} />
               <AmortisationTable loan={result.loan} />
-              <Card className="text-center">
-                <p className="mb-3 text-sm text-text-muted">Want help comparing banks or checking your eligibility?</p>
-                <AdvisorButton />
-              </Card>
+              <div className="flex flex-wrap items-center justify-between gap-2 rounded-3xl bg-surface px-5 py-4 sm:px-6">
+                <p className="text-sm text-text-muted">Want help picking a bank?</p>
+                <AdvisorButton variant="link" />
+              </div>
             </>
           ) : (
-            <Card title="Your loan">
-              <p className="text-sm leading-relaxed text-text-muted">
-                Finish <button type="button" onClick={onBack} className="text-gold underline">step 2 (Cost Sheet)</button> first, or type a property value on the left, to see your EMI, total interest and the cash you need upfront.
-              </p>
+            <Card>
+              <div className="py-6">
+                <span aria-hidden className="text-4xl">🏦</span>
+                <p className="mt-4 text-[17px] font-semibold tracking-tight">Your EMI shows up here</p>
+                <p className="mt-1 text-sm text-text-muted">
+                  Finish <button type="button" onClick={onBack} className="text-gold hover:underline">step 2</button> first, or type a property value.
+                </p>
+              </div>
             </Card>
           )}
         </div>
       </div>
-      <NextStep label="" onClick={() => {}} back={{ label: 'Back to step 2', onClick: onBack }} />
+      <NextStep back={{ label: 'Cost Sheet', onClick: onBack }} />
     </div>
   );
 }

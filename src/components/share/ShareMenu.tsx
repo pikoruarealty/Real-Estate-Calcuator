@@ -104,13 +104,13 @@ export function ShareMenu() {
 
   return (
     <div>
-      <div className="flex flex-wrap gap-2">
-        <Button variant="secondary" onClick={copyLink} disabled={!shareUrl}>Copy link</Button>
-        <Button variant="secondary" onClick={pdf} disabled={disabled || busy !== null}>{busy === 'pdf' ? 'Preparing…' : 'Download PDF'}</Button>
-        <Button variant="secondary" onClick={png} disabled={disabled || busy !== null}>{busy === 'png' ? 'Preparing…' : 'Save image'}</Button>
-        <Button variant="secondary" onClick={whatsapp} disabled={disabled}>WhatsApp</Button>
+      <div className="grid grid-cols-4 gap-1.5 sm:flex sm:flex-wrap sm:gap-2">
+        <Button variant="secondary" className="min-h-10 px-2 text-[13px] sm:px-4" onClick={whatsapp} disabled={disabled}>WhatsApp</Button>
+        <Button variant="secondary" className="min-h-10 px-2 text-[13px] sm:px-4" onClick={copyLink} disabled={!shareUrl}>Copy link</Button>
+        <Button variant="secondary" className="min-h-10 px-2 text-[13px] sm:px-4" aria-label="Download PDF" onClick={pdf} disabled={disabled || busy !== null}>{busy === 'pdf' ? 'Preparing…' : 'PDF'}</Button>
+        <Button variant="secondary" className="min-h-10 px-2 text-[13px] sm:px-4" aria-label="Save image" onClick={png} disabled={disabled || busy !== null}>{busy === 'png' ? 'Preparing…' : 'Image'}</Button>
       </div>
-      <p role="status" aria-live="polite" className="mt-2 min-h-4 text-xs text-gold">{msg}</p>
+      <p role="status" aria-live="polite" className="mt-2 min-h-4 text-[13px] text-gold">{msg}</p>
       {showCard && (
         <div aria-hidden style={{ position: 'fixed', left: -10000, top: 0, pointerEvents: 'none' }}>
           <ShareImageCard ref={cardRef} input={input} result={result} />

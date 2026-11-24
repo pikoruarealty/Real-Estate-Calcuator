@@ -1,65 +1,61 @@
+'use client';
+
 import { LOAN_NOTE } from '@/content/copy';
 import { formatINR, formatINRWords, formatPct } from '@/engine/format';
 import type { LoanResult } from '@/engine/types';
-import { Card } from '@/components/ui/Card';
+import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
 import { Tooltip } from '@/components/ui/Tooltip';
 
-function Tile({ label, value, sub, gold, tip }: { label: string; value: string; sub?: string; gold?: boolean; tip: string }) {
+function Stat({ label, value, sub, tip, gold }: { label: string; value: string; sub?: string; tip: string; gold?: boolean }) {
   return (
-    <div className="rounded-lg border border-border bg-bg p-3">
-      <p className="flex items-center text-[11px] uppercase tracking-wide text-text-muted">{label}<Tooltip term={tip} /></p>
-      <p className={`mt-1 text-xl font-semibold ${gold ? 'text-gold' : 'text-text'}`}>{value}</p>
-      {sub && <p className="text-[11px] text-text-muted">{sub}</p>}
+    <div className="rounded-2xl bg-white/[0.03] p-4">
+      <p className="flex items-center text-[13px] text-text-muted">{label}<Tooltip term={tip} /></p>
+      <p className={`mt-1 text-xl font-semibold tracking-tight ${gold ? 'text-gold' : 'text-text'}`}>{value}</p>
+      {sub && <p className="mt-0.5 text-xs text-text-muted">{sub}</p>}
     </div>
   );
 }
 
-export function LoanTiles({ loan }: { loan: LoanResult }) {
+export function LoanTiles({ loan, tenureYears, ratePct }: { loan: LoanResult; tenureYears: number; ratePct: number }) {
   const total = loan.loanAmount + loan.totalInterest || 1;
   const pPct = (loan.loanAmount / total) * 100;
   return (
-    <Card title="Your loan at a glance">
-      <div className="grid grid-cols-2 gap-2">
-        <Tile tip="loanAmount" label="Loan amount" value={formatINRWords(loan.loanAmount)} sub={`${formatPct(loan.ltvUsedPct, 1)} of value${loan.capped ? ' (capped)' : ''}`} />
-        <Tile tip="emi" label="EMI / month" value={formatINR(loan.emi)} sub="Paid every month" gold />
-        <Tile tip="totalInterest" label="Total interest" value={formatINRWords(loan.totalInterest)} sub="Bank’s earnings" />
-        <Tile tip="totalRepayment" label="Total repayment" value={formatINRWords(loan.totalRepayment)} sub="Loan + interest" />
-        <div className="col-span-2">
-          <Tile
-            tip="upfrontCash"
-            label="Upfront cash needed"
-            value={formatINR(loan.upfrontCash)}
-            sub={loan.upfrontExcludesTaxes ? 'Excluding taxes (no cost sheet yet) · includes processing fee' : 'All-in cost − loan + processing fee'}
-            gold
-          />
+    <section className="relative overflow-hidden rounded-3xl bg-surface p-6 sm:p-8">
+      <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-gold/10 blur-3xl" />
+      <p className="relative flex items-center text-sm text-text-muted">Your EMI<Tooltip term="emi" /></p>
+      <p className="relative mt-1 text-[42px] font-semibold leading-none tracking-tight text-gold sm:text-6xl">
+        <AnimatedNumber value={loan.emi} format={formatINR} />
+        <span className="ml-2 text-lg font-normal text-text-muted">/ month</span>
+      </p>
+      <p className="relative mt-3 text-sm text-text-muted">for {tenureYears} years at {ratePct}% interest</p>
+
+      <div className="relative mt-7 grid grid-cols-2 gap-2">
+        <Stat tip="upfrontCash" label="Cash you need" value={formatINRWords(loan.upfrontCash)} sub={loan.upfrontExcludesTaxes ? 'excl. taxes' : 'down payment + taxes + fees'} gold />
+        <Stat tip="loanAmount" label="Bank lends" value={formatINRWords(loan.loanAmount)} sub={`${formatPct(loan.ltvUsedPct, 0)} of value${loan.capped ? ' · capped' : ''}`} />
+        <Stat tip="totalInterest" label="Total interest" value={formatINRWords(loan.totalInterest)} />
+        <Stat tip="totalRepayment" label="Total you repay" value={formatINRWords(loan.totalRepayment)} />
+      </div>
+
+      <div className="relative mt-7">
+        <div className="flex h-2.5 gap-[3px] overflow-hidden rounded-full" role="img" aria-label={`Principal ${formatPct(pPct, 0)}, interest ${formatPct(100 - pPct, 0)}`}>
+          <div className="rounded-full bg-gold transition-all duration-500" style={{ width: `${pPct}%` }} />
+          <div className="rounded-full bg-[#55524c] transition-all duration-500" style={{ width: `${100 - pPct}%` }} />
+        </div>
+        <div className="mt-2 flex justify-between text-[13px] text-text-muted">
+          <span className="flex items-center"><span aria-hidden className="mr-2 h-2 w-2 rounded-full bg-gold" />Loan {formatPct(pPct, 0)}</span>
+          <span className="flex items-center">Interest {formatPct(100 - pPct, 0)}<span aria-hidden className="ml-2 h-2 w-2 rounded-full bg-[#55524c]" /><Tooltip term="principalInterest" /></span>
         </div>
       </div>
-      <div className="mt-4">
-        <p className="mb-2 flex items-center text-[13px] font-medium text-text-muted">Principal vs interest<Tooltip term="principalInterest" /></p>
-        <div
-          role="img"
-          aria-label={`Principal ${formatPct(pPct, 1)}, interest ${formatPct(100 - pPct, 1)}`}
-          className="flex h-3 overflow-hidden rounded-full border border-border"
-        >
-          <div style={{ width: `${pPct}%` }} className="bg-gold" />
-          <div style={{ width: `${100 - pPct}%`, background: 'repeating-linear-gradient(45deg,#8c887e 0 4px,#2a2a2a 4px 8px)' }} />
-        </div>
-        <div className="mt-1.5 flex justify-between text-xs text-text-muted">
-          <span><span aria-hidden className="mr-1 inline-block h-2 w-2 bg-gold" />Principal {formatPct(pPct, 1)}</span>
-          <span><span aria-hidden className="mr-1 inline-block h-2 w-2 bg-[#8c887e]" />Interest {formatPct(100 - pPct, 1)}</span>
-        </div>
-      </div>
+
       {loan.loanAmount > 0 && (
-        <p className="mt-4 rounded-lg bg-surface-2 p-3 text-sm leading-relaxed">
-          You borrow <strong className="text-gold">{formatINRWords(loan.loanAmount)}</strong> and pay back{' '}
-          <strong className="text-text">{formatINRWords(loan.totalRepayment)}</strong> in total, so the loan costs you{' '}
-          <strong className="text-text">{formatINRWords(loan.totalInterest)}</strong> in interest.
+        <p className="relative mt-6 text-[15px] leading-relaxed text-text-muted">
+          You borrow <b className="text-text">{formatINRWords(loan.loanAmount)}</b> and pay back <b className="text-text">{formatINRWords(loan.totalRepayment)}</b>.
           {loan.emiToIncomePct != null && (
-            <> Your EMI takes <strong className={loan.emiToIncomePct > 50 ? 'text-warn' : 'text-text'}>{formatPct(loan.emiToIncomePct, 0)}</strong> of your monthly income.</>
+            <> The EMI is <b className={loan.emiToIncomePct > 50 ? 'text-warn' : 'text-text'}>{formatPct(loan.emiToIncomePct, 0)}</b> of your income.</>
           )}
         </p>
       )}
-      <p className="mt-3 text-xs text-text-muted">{LOAN_NOTE}</p>
-    </Card>
+      <p className="relative mt-4 text-xs text-text-muted/80">{LOAN_NOTE}</p>
+    </section>
   );
 }

@@ -11,7 +11,7 @@ const cell = 'px-2 py-2 text-right align-top whitespace-nowrap';
 function BlockHeader({ title, sub, tip }: { title: string; sub?: string; tip?: string }) {
   return (
     <tr>
-      <th scope="colgroup" colSpan={5} className="bg-surface-2 px-2 py-2 text-left">
+      <th scope="colgroup" colSpan={5} className="px-2 pb-2 pt-5 text-left">
         <span className="flex items-center text-xs font-semibold uppercase tracking-wide text-gold">{title}{tip && <Tooltip term={tip} />}</span>
         {sub && <span className="block text-xs font-normal normal-case text-text-muted">{sub}</span>}
       </th>
@@ -23,11 +23,11 @@ function Rows({ section, showGst }: { section: SheetSection; showGst: boolean })
   return (
     <>
       {section.rows.map((l) => (
-        <tr key={l.key} className="border-b border-border/60">
+        <tr key={l.key} className="border-b border-white/5">
           <th scope="row" className="px-2 py-2 text-left align-top font-normal">
             {l.label}
             <Tooltip term={lineTipKey(l.key)} />
-            {l.refundable && <span className="ml-1.5 rounded border border-gold-muted px-1 text-[10px] text-gold-muted">refundable</span>}
+            {l.refundable && <span className="ml-1.5 rounded-full bg-gold/10 px-2 py-0.5 text-[10px] text-gold">refundable</span>}
             <span className="block text-xs text-text-muted @2xl:hidden">{l.calc}</span>
           </th>
           <td className="hidden px-2 py-2 text-xs text-text-muted @2xl:table-cell">{l.calc}</td>
@@ -49,7 +49,7 @@ function Rows({ section, showGst }: { section: SheetSection; showGst: boolean })
 
 function Subtotal({ label, s, gstPct, tip }: { label: string; s: { amount: number; gst: number; total: number }; gstPct?: number; tip?: string }) {
   return (
-    <tr className="border-b border-border bg-surface-2/60 font-semibold">
+    <tr className="border-b border-white/5 font-semibold">
       <th scope="row" className="px-2 py-2 text-left">{label}{tip && <Tooltip term={tip} />}</th>
       <td className="hidden @2xl:table-cell" />
       <td className={cell}>{formatINR(s.amount)}</td>
@@ -90,7 +90,7 @@ export function CostSheetTable({ cost }: { cost: CostResult }) {
             </>
           )}
 
-          <tr className="border-b border-border font-semibold">
+          <tr className="border-b border-white/5 font-semibold">
             <th scope="row" className="px-2 py-2 text-left">Payable to builder (A + B)<Tooltip term="payableToBuilder" /></th>
             <td className="hidden @2xl:table-cell" />
             <td colSpan={2} />
@@ -102,11 +102,11 @@ export function CostSheetTable({ cost }: { cost: CostResult }) {
           <Subtotal label="Government total" s={s.c} tip="governmentTotal" />
         </tbody>
         <tfoot>
-          <tr className="bg-gold/10">
-            <th scope="row" className="px-2 py-3 text-left font-display text-lg text-gold">All-in cost (A + B + C)<Tooltip term="allIn" /></th>
+          <tr>
+            <th scope="row" className="px-2 pb-1 pt-5 text-left text-base font-semibold text-gold">All-in cost (A + B + C)<Tooltip term="allIn" /></th>
             <td className="hidden @2xl:table-cell" />
             <td colSpan={2} />
-            <td className="px-2 py-3 text-right font-display text-lg text-gold">{formatINR(cost.allInCost)}</td>
+            <td className="px-2 pb-1 pt-5 text-right text-base font-semibold text-gold">{formatINR(cost.allInCost)}</td>
           </tr>
         </tfoot>
       </table>

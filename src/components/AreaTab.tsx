@@ -11,17 +11,17 @@ export function AreaTab({ onNext }: { onNext: () => void }) {
   const { input, result, setArea } = useApp();
   return (
     <div>
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-6">
         <div className="min-w-0">
           <AreaInputs area={input.area} result={result.area} onChange={setArea} />
+          <UnitConverter />
         </div>
-        <div className="min-w-0 space-y-4 lg:sticky lg:top-4 lg:self-start">
+        <div className="min-w-0 space-y-4 lg:sticky lg:top-20 lg:self-start">
           <AreaResultCard area={result.area} vigha={input.area.vighaVariant} />
           <WarningList warnings={result.warnings} codes={['HIGH_LOADING', 'VIGHA_VARIES']} />
         </div>
       </div>
-      <NextStep label="Next: step 2 — Cost Sheet" onClick={onNext} />
-      <UnitConverter />
+      <NextStep label="Next: Cost Sheet" onClick={onNext} />
     </div>
   );
 }

@@ -6,15 +6,15 @@ test.use({ permissions: ['clipboard-read', 'clipboard-write'] });
 
 test('Example loads the reference quote and shows the all-in cost', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'Example', exact: true }).click();
-  await page.getByRole('tab', { name: 'Cost Sheet' }).click();
+  await page.getByRole('button', { name: 'Try an example' }).click();
+  await expect(page.getByRole('tab', { name: /Cost Sheet/ })).toHaveAttribute('aria-selected', 'true');
   await expect(page.getByTestId('all-in')).toHaveText(ALL_IN);
 });
 
 test('copied share link restores the same all-in cost in a new page', async ({ page, context }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'Example', exact: true }).click();
-  await page.getByRole('tab', { name: 'Cost Sheet' }).click();
+  await page.getByRole('button', { name: 'Try an example' }).click();
+  await expect(page.getByRole('tab', { name: /Cost Sheet/ })).toHaveAttribute('aria-selected', 'true');
   await expect(page.getByTestId('all-in')).toHaveText(ALL_IN);
   await page.getByRole('button', { name: 'Copy link' }).click();
   await expect(page.getByText('Link copied')).toBeVisible();

@@ -85,7 +85,7 @@ export function AdvisorDialog() {
   };
 
   const waText = encodeURIComponent(`Hi, I'm ${form.name.trim() || 'a visitor'}. Please help me with my property calculation: ${shareUrl}`);
-  const inputCls = 'min-h-10 w-full rounded-lg border bg-surface-2 px-3 text-sm text-text placeholder:text-text-muted/50';
+  const inputCls = 'h-12 w-full rounded-2xl bg-surface-2 px-4 text-base text-text ring-1 placeholder:text-text-muted/40 focus:outline-none focus-visible:ring-gold/70 sm:text-[15px]';
 
   return (
     <dialog
@@ -93,11 +93,11 @@ export function AdvisorDialog() {
       onClose={() => setAdvisorOpen(false)}
       onClick={(e) => e.target === ref.current && close()}
       aria-labelledby={`${uid}-t`}
-      className="m-auto w-[min(32rem,calc(100vw-1.5rem))] rounded-xl border border-border bg-surface p-0 text-text backdrop:bg-black/70"
+      className="m-auto w-[min(32rem,calc(100vw-1.5rem))] rounded-3xl bg-surface p-0 text-text ring-1 ring-white/10 backdrop:bg-black/70 backdrop:backdrop-blur-sm"
     >
-      <div className="max-h-[90vh] overflow-y-auto p-5 sm:p-6">
+      <div className="max-h-[90vh] overflow-y-auto p-6 sm:p-7">
         <div className="mb-4 flex items-start justify-between gap-3">
-          <h2 id={`${uid}-t`} className="font-display text-2xl">Talk to our expert advisor</h2>
+          <div><h2 id={`${uid}-t`} className="text-2xl font-semibold tracking-tight">Talk to an expert</h2><p className="mt-1 text-sm text-text-muted">Free. We’ll call you back, usually the same day.</p></div>
           <button type="button" aria-label="Close" onClick={close} className="rounded p-1 text-text-muted hover:text-text">✕</button>
         </div>
 
@@ -109,7 +109,7 @@ export function AdvisorDialog() {
                 href={`https://wa.me/${BRAND.advisorWhatsApp}?text=${waText}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex min-h-10 items-center rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-black"
+                className="inline-flex min-h-11 items-center rounded-full bg-gold px-5 text-sm font-semibold text-black"
               >
                 Chat on WhatsApp
               </a>
@@ -117,28 +117,28 @@ export function AdvisorDialog() {
             <div><Button variant="ghost" onClick={close}>Close</Button></div>
           </div>
         ) : (
-          <form onSubmit={submit} noValidate className="space-y-3">
+          <form onSubmit={submit} noValidate className="space-y-4">
             {/* honeypot */}
             <div aria-hidden className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
               <label>Company<input tabIndex={-1} autoComplete="off" value={form.company} onChange={(e) => set('company', e.target.value)} /></label>
             </div>
 
             <Field id={`${uid}-n`} label="Name *" error={errors.name}>
-              <input id={`${uid}-n`} className={`${inputCls} ${errors.name ? 'border-error' : 'border-border'}`} value={form.name} onChange={(e) => set('name', e.target.value)} autoComplete="name" />
+              <input id={`${uid}-n`} className={`${inputCls} ${errors.name ? 'ring-error' : 'ring-transparent'}`} value={form.name} onChange={(e) => set('name', e.target.value)} autoComplete="name" />
             </Field>
             <Field id={`${uid}-p`} label="Mobile number *" error={errors.phone}>
-              <input id={`${uid}-p`} inputMode="tel" className={`${inputCls} ${errors.phone ? 'border-error' : 'border-border'}`} value={form.phone} onChange={(e) => set('phone', e.target.value)} placeholder="98XXXXXXXX" autoComplete="tel" />
+              <input id={`${uid}-p`} inputMode="tel" className={`${inputCls} ${errors.phone ? 'ring-error' : 'ring-transparent'}`} value={form.phone} onChange={(e) => set('phone', e.target.value)} placeholder="98XXXXXXXX" autoComplete="tel" />
             </Field>
             <Field id={`${uid}-e`} label="Email (optional)" error={errors.email}>
-              <input id={`${uid}-e`} type="email" className={`${inputCls} ${errors.email ? 'border-error' : 'border-border'}`} value={form.email} onChange={(e) => set('email', e.target.value)} autoComplete="email" />
+              <input id={`${uid}-e`} type="email" className={`${inputCls} ${errors.email ? 'ring-error' : 'ring-transparent'}`} value={form.email} onChange={(e) => set('email', e.target.value)} autoComplete="email" />
             </Field>
             <Field id={`${uid}-t2`} label="Preferred time to call">
-              <select id={`${uid}-t2`} className={`${inputCls} border-border`} value={form.preferredTime} onChange={(e) => set('preferredTime', e.target.value)}>
+              <select id={`${uid}-t2`} className={`${inputCls} ring-transparent`} value={form.preferredTime} onChange={(e) => set('preferredTime', e.target.value)}>
                 {PREFERRED_TIMES.map((t) => <option key={t}>{t}</option>)}
               </select>
             </Field>
             <Field id={`${uid}-m`} label="Message (optional)" error={errors.message}>
-              <textarea id={`${uid}-m`} rows={3} maxLength={500} className={`${inputCls} py-2 ${errors.message ? 'border-error' : 'border-border'}`} value={form.message} onChange={(e) => set('message', e.target.value)} />
+              <textarea id={`${uid}-m`} rows={3} maxLength={500} className={`${inputCls} h-auto py-3 ${errors.message ? 'ring-error' : 'ring-transparent'}`} value={form.message} onChange={(e) => set('message', e.target.value)} />
             </Field>
             <label className="flex items-center gap-2 text-sm">
               <input type="checkbox" checked={form.attach} onChange={(e) => set('attach', e.target.checked)} className="h-4 w-4 accent-[#D4AF37]" />
@@ -161,7 +161,7 @@ export function AdvisorDialog() {
 function Field({ id, label, error, children }: { id: string; label: string; error?: string; children: React.ReactNode }) {
   return (
     <div>
-      <label htmlFor={id} className="mb-1.5 block text-xs font-medium text-text-muted">{label}</label>
+      <label htmlFor={id} className="mb-2 block text-[13px] text-text-muted">{label}</label>
       {children}
       {error && <p className="mt-1 text-xs text-error">{error}</p>}
     </div>

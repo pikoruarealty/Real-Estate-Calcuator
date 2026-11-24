@@ -9,15 +9,13 @@ export function WarningBanner({ w }: { w: Warning }) {
   return (
     <div
       role={info ? 'note' : 'alert'}
-      className={`flex flex-col gap-2 rounded-lg border px-3 py-2.5 text-sm sm:flex-row sm:items-center sm:justify-between ${
-        info ? 'border-border bg-surface-2 text-text' : 'border-warn/50 bg-warn/10 text-text'
-      }`}
+      className={`flex gap-3 rounded-2xl px-4 py-3.5 text-sm leading-relaxed ${info ? 'bg-surface text-text-muted' : 'bg-warn/[0.08] text-text'}`}
     >
-      <p>
-        <span aria-hidden className={`mr-2 ${info ? 'text-gold-muted' : 'text-warn'}`}>{info ? 'ⓘ' : '⚠'}</span>
-        {warningText(w)}
-      </p>
-      {ADVISOR_WARNINGS.includes(w.code) && <AdvisorButton compact />}
+      <span aria-hidden className={`mt-[7px] h-2 w-2 shrink-0 rounded-full ${info ? 'bg-gold-muted' : 'bg-warn'}`} />
+      <div className="min-w-0 flex-1">
+        <p>{warningText(w)}</p>
+        {ADVISOR_WARNINGS.includes(w.code) && <div className="mt-2"><AdvisorButton variant="link" /></div>}
+      </div>
     </div>
   );
 }

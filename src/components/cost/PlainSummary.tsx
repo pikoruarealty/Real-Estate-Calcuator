@@ -1,54 +1,48 @@
-import { formatAreaNumber, formatINR, formatINRWords, formatPct } from '@/engine/format';
+import { formatAreaNumber, formatINR, formatINRWords } from '@/engine/format';
 import type { CalculatorInput, CalculatorResult } from '@/engine/types';
-import { Card } from '@/components/ui/Card';
 
-/** The result in everyday language, for someone who has never read a cost sheet. */
+/** Three short lines, like a friend explaining the numbers. */
 export function PlainSummary({ input, result }: { input: CalculatorInput; result: CalculatorResult }) {
   const { cost, area, loan } = result;
   if (!cost) return null;
-  const extra = cost.allInCost - cost.basePrice;
-  const points: React.ReactNode[] = [];
-
-  points.push(
-    <>
-      The builder’s base price is <b className="text-text">{formatINRWords(cost.basePrice)}</b>. Once floor rise, extra charges, GST, stamp duty and
-      registration are added, you’ll pay about <b className="text-gold">{formatINRWords(cost.allInCost)}</b>. That’s{' '}
-      <b className="text-text">{formatINRWords(extra)}</b> more{cost.overHeadlinePct != null && <> ({formatPct(cost.overHeadlinePct, 1)})</>}.
-    </>,
-  );
-  points.push(
-    <>
-      <b className="text-text">{formatINRWords(cost.payableToBuilder)}</b> goes to the builder and{' '}
-      <b className="text-text">{formatINRWords(cost.governmentTotal)}</b> goes to the Gujarat government (stamp duty and registration).
-    </>,
-  );
-  if (area.carpetSqft != null && cost.effectiveRatePerCarpetSqft != null) {
-    points.push(
-      <>
-        You can use <b className="text-text">{formatAreaNumber(area.carpetSqft)} sq ft</b>, so each usable sq ft really costs{' '}
-        <b className="text-text">{formatINR(cost.effectiveRatePerCarpetSqft)}</b>. Compare this number when looking at other projects.
-      </>,
-    );
-  }
+  const lines: { icon: string; text: React.ReactNode }[] = [
+    {
+      icon: '🏷️',
+      text: (
+        <>The quote says <b className="text-text">{formatINRWords(cost.basePrice)}</b>. Charges and taxes add <b className="text-text">{formatINRWords(cost.allInCost - cost.basePrice)}</b> on top.</>
+      ),
+    },
+    {
+      icon: '🏛️',
+      text: (
+        <><b className="text-text">{formatINRWords(cost.payableToBuilder)}</b> goes to the builder, <b className="text-text">{formatINRWords(cost.governmentTotal)}</b> to the government.</>
+      ),
+    },
+  ];
   if (loan && loan.loanAmount > 0) {
-    points.push(
-      <>
-        With a loan of <b className="text-text">{formatINRWords(loan.loanAmount)}</b>, you need about{' '}
-        <b className="text-gold">{formatINRWords(loan.upfrontCash)}</b> of your own money, and pay{' '}
-        <b className="text-text">{formatINR(loan.emi)} a month</b> for {input.loan.tenureYears} years. See step 3 for details.
-      </>,
-    );
+    lines.push({
+      icon: '💰',
+      text: (
+        <>Keep <b className="text-gold">{formatINRWords(loan.upfrontCash)}</b> ready yourself. The bank covers the rest at <b className="text-text">{formatINR(loan.emi)}/month</b> for {input.loan.tenureYears} years.</>
+      ),
+    });
+  } else if (area.carpetSqft != null && cost.effectiveRatePerCarpetSqft != null) {
+    lines.push({
+      icon: '📏',
+      text: <>Across {formatAreaNumber(area.carpetSqft)} sq ft you can use, that’s <b className="text-text">{formatINR(cost.effectiveRatePerCarpetSqft)}</b> per sq ft.</>,
+    });
   }
   return (
-    <Card title="In simple words">
-      <ul className="space-y-2.5 text-sm leading-relaxed text-text-muted">
-        {points.map((p, i) => (
-          <li key={i} className="flex gap-2.5">
-            <span aria-hidden className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
-            <span>{p}</span>
+    <section className="rounded-3xl bg-surface p-5 sm:p-6">
+      <h2 className="mb-4 text-[17px] font-semibold tracking-tight">In short</h2>
+      <ul className="space-y-3.5">
+        {lines.map((l, i) => (
+          <li key={i} className="flex gap-3 text-[15px] leading-relaxed text-text-muted">
+            <span aria-hidden className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/[0.05] text-sm">{l.icon}</span>
+            <span className="pt-1">{l.text}</span>
           </li>
         ))}
       </ul>
-    </Card>
+    </section>
   );
 }

@@ -6,7 +6,7 @@ import { ALL_UNITS, convert, convertToAll, lengthToArea, type LengthUnit } from 
 import { formatAreaNumber } from '@/engine/format';
 import { warningText } from '@/content/copy';
 import type { AreaUnit, VighaVariant } from '@/engine/types';
-import { Card } from '@/components/ui/Card';
+import { Disclosure } from '@/components/ui/Card';
 import { NumberInput } from '@/components/ui/NumberInput';
 import { Select } from '@/components/ui/Select';
 import { Tooltip } from '@/components/ui/Tooltip';
@@ -24,7 +24,7 @@ export function UnitConverter() {
   const lenSqft = len != null && wid != null && len > 0 && wid > 0 ? lengthToArea(len, wid, lenUnit) : null;
 
   return (
-    <Card title="Unit converter" tip="converter" className="mt-4" subtitle="Turn sq m, vaar, guntha or vigha into sq ft (and back).">
+    <Disclosure summary="Unit converter" tip="converter" className="mt-4" hint="sq m, vaar, guntha, vigha ↔ sq ft">
       <div className="space-y-4">
         <div className="grid grid-cols-[1fr_9.5rem] items-end gap-2">
           <NumberInput label="Value to convert" value={value} onChange={setValue} min={0} placeholder="e.g. 1" />
@@ -37,13 +37,13 @@ export function UnitConverter() {
             ))}
           </Select>
         {(from === 'vigha' || vigha !== 'v17424') && (
-          <p role="note" className="rounded-lg border border-warn/50 bg-warn/10 p-2.5 text-sm">⚠ {warningText({ code: 'VIGHA_VARIES' })}</p>
+          <p role="note" className="rounded-2xl bg-warn/[0.08] px-4 py-3 text-sm">{warningText({ code: 'VIGHA_VARIES' })}</p>
         )}
 
         {all && (
           <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm sm:grid-cols-3" aria-label="Converted values">
             {ALL_UNITS.filter((u) => u !== from).map((u) => (
-              <div key={u} className="flex justify-between gap-2 border-b border-border py-1.5">
+              <div key={u} className="flex justify-between gap-2 border-b border-white/5 py-2">
                 <dt className="flex items-center text-text-muted">{UNIT_LABELS[u]}<Tooltip term={`u_${u}`} /></dt>
                 <dd className="text-right">{formatAreaNumber(all[u])}</dd>
               </div>
@@ -51,9 +51,9 @@ export function UnitConverter() {
           </dl>
         )}
 
-        <fieldset className="rounded-lg border border-border p-3">
-          <legend className="flex items-center px-1 text-xs text-text-muted">Length × width → area<Tooltip term="lengthHelper" /></legend>
-          <div className="grid grid-cols-[1fr_1fr_5.5rem] items-end gap-2">
+        <fieldset className="rounded-2xl bg-bg/60 p-4">
+          <legend className="float-left mb-3 flex w-full items-center text-[13px] text-text-muted">Length × width → area<Tooltip term="lengthHelper" /></legend>
+          <div className="clear-both grid grid-cols-[1fr_1fr_5.5rem] items-end gap-2">
             <NumberInput label="Length" value={len} onChange={setLen} min={0} />
             <NumberInput label="Width" value={wid} onChange={setWid} min={0} />
             <Select label="Unit" value={lenUnit} onChange={(v) => setLenUnit(v as LengthUnit)}>
@@ -70,6 +70,6 @@ export function UnitConverter() {
           )}
         </fieldset>
       </div>
-    </Card>
+    </Disclosure>
   );
 }
