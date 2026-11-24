@@ -15,6 +15,8 @@ export interface CalculatorApi {
   setLoan: (patch: Partial<LoanInput>) => void;
   loadExample: () => void;
   reset: () => void;
+  /** replace the whole input (used for undo) */
+  load: (input: CalculatorInput) => void;
   shareUrl: string;
   /** one-shot message to show in a toast (e.g. invalid shared link) */
   notice: string | null;
@@ -68,9 +70,10 @@ export function useCalculator(): CalculatorApi {
   const setLoan = useCallback((patch: Partial<LoanInput>) => setInput((i) => ({ ...i, loan: { ...i.loan, ...patch } })), []);
   const loadExample = useCallback(() => setInput(exampleInput()), []);
   const reset = useCallback(() => setInput(defaultInput()), []);
+  const load = useCallback((i: CalculatorInput) => setInput(i), []);
   const clearNotice = useCallback(() => setNotice(null), []);
 
   const shareUrl = useMemo(() => (origin ? buildShareUrl(input, origin) : ''), [input, origin]);
 
-  return { input, result, setArea, setCost, setLoan, loadExample, reset, shareUrl, notice, clearNotice, hydrated };
+  return { input, result, setArea, setCost, setLoan, loadExample, reset, load, shareUrl, notice, clearNotice, hydrated };
 }

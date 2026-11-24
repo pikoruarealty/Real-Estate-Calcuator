@@ -1,5 +1,6 @@
 'use client';
 
+import { AreaIcon, IconTile } from '@/components/ui/Icons';
 import { formatAreaNumber, formatPct } from '@/engine/format';
 import { convert } from '@/engine/units';
 import type { AreaResult, VighaVariant } from '@/engine/types';
@@ -33,7 +34,7 @@ export function AreaResultCard({ area, vigha }: { area: AreaResult; vigha: Vigha
     return (
       <Card>
         <div className="flex flex-col items-center px-4 py-10 text-center">
-          <span aria-hidden className="mb-4 text-4xl">📐</span>
+          <span className="mb-4"><IconTile><AreaIcon size={26} /></IconTile></span>
           <p className="text-[15px] font-medium">Your true size shows up here</p>
           <p className="mt-1 max-w-xs text-sm text-text-muted">How much you can actually use, and how much you’re paying for.</p>
         </div>

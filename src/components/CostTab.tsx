@@ -1,5 +1,6 @@
 'use client';
 
+import { CheckIcon, IconTile, ReceiptIcon } from '@/components/ui/Icons';
 import { useApp } from '@/state/CalculatorContext';
 import { CostInputs } from '@/components/cost/CostInputs';
 import { CostSheetTable } from '@/components/cost/CostSheetTable';
@@ -14,7 +15,7 @@ function Check({ ok, children }: { ok: boolean; children: React.ReactNode }) {
   return (
     <li className="flex items-center gap-3 text-[15px]">
       <span aria-hidden className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${ok ? 'bg-gold text-black' : 'bg-white/[0.06]'}`}>
-        {ok ? '✓' : ''}
+        {ok ? <CheckIcon size={13} /> : null}
       </span>
       <span className={ok ? 'text-text-muted' : 'text-text'}>{children}</span>
       <span className="sr-only">{ok ? '(done)' : '(to do)'}</span>
@@ -51,7 +52,7 @@ export function CostTab({ onNext, onBack }: { onNext: () => void; onBack: () => 
           ) : (
             <Card>
               <div className="py-6">
-                <span aria-hidden className="text-4xl">🧾</span>
+                <IconTile><ReceiptIcon size={26} /></IconTile>
                 <p className="mt-4 text-[17px] font-semibold tracking-tight">Your real price shows up here</p>
                 <p className="mt-1 text-sm text-text-muted">Two things needed:</p>
                 <ul className="mt-5 space-y-3">

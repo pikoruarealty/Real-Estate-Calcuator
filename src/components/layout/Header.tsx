@@ -3,29 +3,14 @@
 /* eslint-disable @next/next/no-img-element */
 import type { ReactNode } from 'react';
 import { BRAND } from '@/config/brand';
+import { BookIcon, CalculatorIcon, ChatIcon } from '@/components/ui/Icons';
 
 export type NavSection = 'calculator' | 'glossary' | 'advisor';
 
 const Icon = {
-  calculator: (
-    <svg aria-hidden width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <rect x="3" y="1.75" width="10" height="12.5" rx="2" stroke="currentColor" strokeWidth="1.4" />
-      <path d="M5.5 4.75h5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-      <circle cx="5.75" cy="8" r=".8" fill="currentColor" /><circle cx="8" cy="8" r=".8" fill="currentColor" /><circle cx="10.25" cy="8" r=".8" fill="currentColor" />
-      <circle cx="5.75" cy="10.75" r=".8" fill="currentColor" /><circle cx="8" cy="10.75" r=".8" fill="currentColor" /><circle cx="10.25" cy="10.75" r=".8" fill="currentColor" />
-    </svg>
-  ),
-  glossary: (
-    <svg aria-hidden width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <path d="M2.5 3.25c0-.55.45-1 1-1h3c.83 0 1.5.67 1.5 1.5v9.5c0-.69-.56-1.25-1.25-1.25H3.5a1 1 0 0 1-1-1v-7.75ZM13.5 3.25c0-.55-.45-1-1-1h-3C8.67 2.25 8 2.92 8 3.75v9.5c0-.69.56-1.25 1.25-1.25h3.25a1 1 0 0 0 1-1v-7.75Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
-    </svg>
-  ),
-  advisor: (
-    <svg aria-hidden width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <path d="M2.5 7.5a5.5 5 0 1 1 2.6 4.25L2.75 12.5l.7-2.2A4.8 4.8 0 0 1 2.5 7.5Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
-      <path d="M5.75 7.5h.01M8 7.5h.01M10.25 7.5h.01" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  ),
+  calculator: <CalculatorIcon />,
+  glossary: <BookIcon />,
+  advisor: <ChatIcon />,
 };
 
 function NavItem({ active, onClick, icon, label, short, accent }: {

@@ -1,5 +1,6 @@
 'use client';
 
+import { BankIcon, IconTile } from '@/components/ui/Icons';
 import { useApp } from '@/state/CalculatorContext';
 import { LoanInputs } from '@/components/loan/LoanInputs';
 import { LoanTiles } from '@/components/loan/LoanTiles';
@@ -29,7 +30,7 @@ export function LoanTab({ onBack }: { onBack: () => void }) {
           ) : (
             <Card>
               <div className="py-6">
-                <span aria-hidden className="text-4xl">🏦</span>
+                <IconTile><BankIcon size={26} /></IconTile>
                 <p className="mt-4 text-[17px] font-semibold tracking-tight">Your EMI shows up here</p>
                 <p className="mt-1 text-sm text-text-muted">
                   Finish <button type="button" onClick={onBack} className="text-gold hover:underline">step 2</button> first, or type a property value.

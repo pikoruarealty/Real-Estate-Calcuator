@@ -1,5 +1,6 @@
 'use client';
 
+import { CloseIcon } from '@/components/ui/Icons';
 import { useEffect, useId, useRef, useState } from 'react';
 import { BRAND } from '@/config/brand';
 import { PREFERRED_TIMES, leadSchema } from '@/lib/lead';
@@ -98,7 +99,7 @@ export function AdvisorDialog() {
       <div className="max-h-[90vh] overflow-y-auto p-6 sm:p-7">
         <div className="mb-4 flex items-start justify-between gap-3">
           <div><h2 id={`${uid}-t`} className="text-2xl font-semibold tracking-tight">Talk to an expert</h2><p className="mt-1 text-sm text-text-muted">Free. We’ll call you back, usually the same day.</p></div>
-          <button type="button" aria-label="Close" onClick={close} className="rounded p-1 text-text-muted hover:text-text">✕</button>
+          <button type="button" aria-label="Close" onClick={close} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/5 text-text-muted hover:text-text"><CloseIcon size={16} /></button>
         </div>
 
         {status === 'done' ? (

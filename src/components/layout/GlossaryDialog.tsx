@@ -1,5 +1,6 @@
 'use client';
 
+import { CloseIcon } from '@/components/ui/Icons';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { GLOSSARY, GLOSSARY_GROUPS } from '@/content/glossary';
 
@@ -37,7 +38,7 @@ export function GlossaryDialog({ open, onClose }: { open: boolean; onClose: () =
               <h2 id="glossary-title" className="text-2xl font-semibold tracking-tight">Glossary</h2>
               <p className="text-sm text-text-muted">Every property word you’ll hear, in plain English.</p>
             </div>
-            <button type="button" aria-label="Close glossary" onClick={onClose} className="flex h-9 w-9 items-center justify-center rounded-lg text-text-muted hover:text-text">✕</button>
+            <button type="button" aria-label="Close glossary" onClick={onClose} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/5 text-text-muted hover:text-text"><CloseIcon size={16} /></button>
           </div>
           <label htmlFor="glossary-q" className="sr-only">Search the glossary</label>
           <input
