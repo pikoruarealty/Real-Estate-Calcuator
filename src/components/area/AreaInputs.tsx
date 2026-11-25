@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { REGIONAL_UNITS_BASE, OTHER_STATE_UNITS, UNIT_LABELS, VIGHA_VARIANTS } from '@/engine/config';
 import { validateArea } from '@/engine/areas';
 import { formatPct } from '@/engine/format';
@@ -31,13 +31,81 @@ export function UnitSelect({ value, onChange, label = 'Unit', hideLabel = true }
   );
 }
 
-
 const HINT_KEY: Record<KnownAreaType, MessageKey> = {
   carpet: 'area.hint.carpet',
   sbu: 'area.hint.sbu',
   reraArea: 'area.hint.rera',
   carpetAndSbu: 'area.hint.both',
 };
+
+/* ---------- Small helpers ---------- */
+
+/** Fades and slides in when a conditional field appears, so changes never feel like a jump. */
+function Enter({ children, className = '' }: { children: ReactNode; className?: string }) {
+  const [on, setOn] = useState(false);
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setOn(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+  return (
+    <div
+      className={`transition-all duration-300 ease-out motion-reduce:transition-none ${
+        on ? 'translate-y-0 opacity-100' : '-translate-y-1 opacity-0'
+      } ${className}`}
+    >
+      {children}
+    </div>
+  );
+}
+
+/** Soft grouped panel so related fields read as one block. */
+const panelCls = 'rounded-2xl bg-white/[0.03] p-4 ring-1 ring-white/[0.06]';
+
+/** Two-option switch with a sliding thumb. Big touch targets, clear selected state. */
+function ModeToggle({
+  value, onChange, options, ariaLabel,
+}: {
+  value: 'loading' | 'kapat';
+  onChange: (m: 'loading' | 'kapat') => void;
+  options: { value: 'loading' | 'kapat'; label: string }[];
+  ariaLabel: string;
+}) {
+  const idx = options.findIndex((o) => o.value === value);
+  return (
+    <span
+      role="radiogroup"
+      aria-label={ariaLabel}
+      className="relative grid w-full grid-cols-2 rounded-full bg-surface-2 p-1 text-sm sm:w-56"
+    >
+      <span
+        aria-hidden
+        className={`absolute inset-y-1 left-1 w-[calc(50%-0.25rem)] rounded-full bg-gold shadow-md shadow-gold/20 transition-transform duration-300 ease-out motion-reduce:transition-none ${
+          idx === 1 ? 'translate-x-full' : 'translate-x-0'
+        }`}
+      />
+      {options.map((o) => (
+        <button
+          key={o.value}
+          type="button"
+          role="radio"
+          aria-checked={value === o.value}
+          onClick={() => onChange(o.value)}
+          className={`relative z-10 min-h-9 rounded-full px-3 text-center transition-colors duration-300 ${
+            value === o.value ? 'font-semibold text-black' : 'text-text-muted hover:text-text'
+          }`}
+        >
+          {o.label}
+        </button>
+      ))}
+    </span>
+  );
+}
+
+const PlusIcon = () => (
+  <svg aria-hidden width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" className="shrink-0 transition-transform duration-300 group-hover:rotate-90">
+    <path d="M12 5v14M5 12h14" />
+  </svg>
+);
 
 export function AreaInputs({ area, result, onChange }: { area: AreaInput; result: AreaResult; onChange: (p: Partial<AreaInput>) => void }) {
   const { t } = useT();
@@ -58,80 +126,106 @@ export function AreaInputs({ area, result, onChange }: { area: AreaInput; result
 
   return (
     <Card title={t('area.title')} subtitle={t('area.sub')}>
-      <div className="space-y-5">
-        <Segmented
-          label={t('area.known')}
-          tip="knownType"
-          value={area.knownType}
-          options={KNOWN}
-          onChange={(v) => {
-            onChange({ knownType: v });
-            if (v === 'reraArea') setExtrasOpen(true);
-          }}
-          size="sm"
-          hint={t(HINT_KEY[area.knownType])}
-        />
+      <div className="space-y-4 sm:space-y-5">
+        {/* 1. Which area do you know? */}
+        <div className="min-w-0">
+          <Segmented
+            label={t('area.known')}
+            tip="knownType"
+            value={area.knownType}
+            options={KNOWN}
+            onChange={(v) => {
+              onChange({ knownType: v });
+              if (v === 'reraArea') setExtrasOpen(true);
+            }}
+            size="sm"
+            hint={t(HINT_KEY[area.knownType])}
+          />
+        </div>
 
-        <div className="grid grid-cols-[1fr_8.5rem] items-end gap-2">
-          <NumberInput label={valueLabel} tip={tipKey} value={area.value} onChange={(v) => onChange({ value: v })} error={errors.value} placeholder="1,200" />
-          <UnitSelect value={area.unit} onChange={(unit) => onChange({ unit })} />
+        {/* 2. Enter the area + unit (stacks on very small screens) */}
+        <div className="grid grid-cols-1 items-end gap-2 min-[360px]:grid-cols-[minmax(0,1fr)_8.5rem] sm:grid-cols-[minmax(0,1fr)_9.5rem]">
+          <div className="min-w-0">
+            <NumberInput label={valueLabel} tip={tipKey} value={area.value} onChange={(v) => onChange({ value: v })} error={errors.value} placeholder="1,200" />
+          </div>
+          <div className="min-w-0">
+            <UnitSelect value={area.unit} onChange={(unit) => onChange({ unit })} />
+          </div>
         </div>
 
         {both && (
-          <NumberInput label={t('area.sbuArea')} tip="sbu" value={area.sbuValue} onChange={(v) => onChange({ sbuValue: v })} error={errors.sbuValue} placeholder="1,620" suffix={t('area.sameUnit')} />
+          <Enter>
+            <NumberInput label={t('area.sbuArea')} tip="sbu" value={area.sbuValue} onChange={(v) => onChange({ sbuValue: v })} error={errors.sbuValue} placeholder="1,620" suffix={t('area.sameUnit')} />
+          </Enter>
         )}
 
         {area.unit === 'vigha' && (
-          <Select label="Vigha size" tip="u_vigha" value={area.vighaVariant} onChange={(v) => onChange({ vighaVariant: v as VighaVariant })}>
-            {(Object.keys(VIGHA_VARIANTS) as VighaVariant[]).map((k) => (
-              <option key={k} value={k}>{VIGHA_VARIANTS[k].sqft.toLocaleString('en-IN')} sq ft — {VIGHA_VARIANTS[k].label}</option>
-            ))}
-          </Select>
+          <Enter>
+            <Select label="Vigha size" tip="u_vigha" value={area.vighaVariant} onChange={(v) => onChange({ vighaVariant: v as VighaVariant })}>
+              {(Object.keys(VIGHA_VARIANTS) as VighaVariant[]).map((k) => (
+                <option key={k} value={k}>{VIGHA_VARIANTS[k].sqft.toLocaleString('en-IN')} sq ft — {VIGHA_VARIANTS[k].label}</option>
+              ))}
+            </Select>
+          </Enter>
         )}
 
+        {/* 3. Common area (hidden when both areas are known, since it can be worked out) */}
         {!both && (
-          <div>
-            <div className="mb-2 flex items-center justify-between gap-2 text-[13px] text-text-muted">
-              <span className="flex items-center">{t('area.common')}<Tooltip term={area.mode} /></span>
-              <span role="radiogroup" aria-label="Common area is given as" className="flex rounded-full bg-surface-2 p-0.5 text-xs">
-                {(['loading', 'kapat'] as const).map((m) => (
-                  <button
-                    key={m}
-                    type="button"
-                    role="radio"
-                    aria-checked={area.mode === m}
-                    onClick={() => onChange({ mode: m, pct: null })}
-                    className={`min-h-7 rounded-full px-3 transition ${area.mode === m ? 'bg-white/10 text-text' : 'text-text-muted hover:text-text'}`}
-                  >
-                    {m === 'loading' ? t('results.loading') : t('results.kapat')}
-                  </button>
-                ))}
-              </span>
+          <Enter>
+            <div className={panelCls}>
+              <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
+                <span className="flex items-center text-[13px] font-medium text-text-muted">
+                  {t('area.common')}
+                  <Tooltip term={area.mode} />
+                </span>
+                <ModeToggle
+                  value={area.mode}
+                  onChange={(m) => onChange({ mode: m, pct: null })}
+                  ariaLabel="Common area is given as"
+                  options={[
+                    { value: 'loading', label: t('results.loading') },
+                    { value: 'kapat', label: t('results.kapat') },
+                  ]}
+                />
+              </div>
+              <div className="mt-3">
+                <NumberInput
+                  label={area.mode === 'loading' ? t('area.loadingPct') : t('area.kapatPct')}
+                  hideLabel
+                  suffix="%"
+                  value={area.pct}
+                  onChange={(pct) => onChange({ pct })}
+                  error={errors.pct}
+                  placeholder={area.mode === 'loading' ? '35' : '25'}
+                  hint={otherPct != null ? `= ${formatPct(otherPct)} ${otherName}` : t('area.askBuilder')}
+                />
+              </div>
             </div>
-            <NumberInput
-              label={area.mode === 'loading' ? t('area.loadingPct') : t('area.kapatPct')}
-              hideLabel
-              suffix="%"
-              value={area.pct}
-              onChange={(pct) => onChange({ pct })}
-              error={errors.pct}
-              placeholder={area.mode === 'loading' ? '35' : '25'}
-              hint={otherPct != null ? `= ${formatPct(otherPct)} ${otherName}` : t('area.askBuilder')}
-            />
-          </div>
+          </Enter>
         )}
 
+        {/* 4. Optional extras */}
         {extrasOpen ? (
-          <div className="rounded-2xl bg-bg/60 p-4">
-            <p className="mb-3 flex items-center text-[13px] text-text-muted">{t('area.extrasTitle')}<Tooltip term="extras" /></p>
-            <div className="grid grid-cols-3 gap-2">
-              <NumberInput label={t('area.balcony')} emptyAsZero value={area.balconySqft || null} onChange={(v) => onChange({ balconySqft: v ?? 0 })} min={0} placeholder="0" />
-              <NumberInput label={t('area.wash')} emptyAsZero value={area.washSqft || null} onChange={(v) => onChange({ washSqft: v ?? 0 })} min={0} placeholder="0" />
-              <NumberInput label={t('area.terrace')} emptyAsZero value={area.terraceSqft || null} onChange={(v) => onChange({ terraceSqft: v ?? 0 })} min={0} placeholder="0" />
+          <Enter>
+            <div className={panelCls}>
+              <p className="mb-3 flex items-center text-[13px] font-medium text-text-muted">
+                {t('area.extrasTitle')}
+                <Tooltip term="extras" />
+              </p>
+              <div className="grid grid-cols-1 gap-2 min-[360px]:grid-cols-3">
+                <NumberInput label={t('area.balcony')} emptyAsZero value={area.balconySqft || null} onChange={(v) => onChange({ balconySqft: v ?? 0 })} min={0} placeholder="0" />
+                <NumberInput label={t('area.wash')} emptyAsZero value={area.washSqft || null} onChange={(v) => onChange({ washSqft: v ?? 0 })} min={0} placeholder="0" />
+                <NumberInput label={t('area.terrace')} emptyAsZero value={area.terraceSqft || null} onChange={(v) => onChange({ terraceSqft: v ?? 0 })} min={0} placeholder="0" />
+              </div>
             </div>
-          </div>
+          </Enter>
         ) : (
-          <button type="button" onClick={() => setExtrasOpen(true)} className="text-sm text-text-muted transition hover:text-gold">
+          <button
+            type="button"
+            onClick={() => setExtrasOpen(true)}
+            className="group flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-white/15 px-4 text-sm text-text-muted transition-all duration-300 hover:border-gold/50 hover:bg-gold/[0.04] hover:text-gold active:scale-[0.99] motion-reduce:transform-none"
+          >
+            <PlusIcon />
             {t('area.addExtras')}
           </button>
         )}
