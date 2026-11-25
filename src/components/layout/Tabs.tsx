@@ -2,17 +2,20 @@
 
 import { CheckIcon, ResetIcon } from '@/components/ui/Icons';
 import { forwardRef, useRef } from 'react';
+import { useT } from '@/state/LanguageContext';
+import type { MessageKey } from '@/content/i18n';
 
 export type TabId = 'area' | 'cost' | 'loan';
-export const TABS: { id: TabId; step: number; label: string; short: string }[] = [
-  { id: 'area', step: 1, label: 'Area', short: 'Area' },
-  { id: 'cost', step: 2, label: 'Cost Sheet', short: 'Cost' },
-  { id: 'loan', step: 3, label: 'Loan & EMI', short: 'Loan' },
+export const TABS: { id: TabId; step: number; label: MessageKey; short: MessageKey }[] = [
+  { id: 'area', step: 1, label: 'step.area', short: 'step.areaShort' },
+  { id: 'cost', step: 2, label: 'step.cost', short: 'step.costShort' },
+  { id: 'loan', step: 3, label: 'step.loan', short: 'step.loanShort' },
 ];
 
-/** Pill stepper. Arrow keys move between steps. */
+/** The calculator's only step navigation. Arrow keys move between steps. */
 export const Tabs = forwardRef<HTMLDivElement, { active: TabId; onChange: (t: TabId) => void; done: Record<TabId, boolean>; onReset: () => void }>(
   function Tabs({ active, onChange, done, onReset }, ref) {
+    const { t } = useT();
     const refs = useRef<Record<string, HTMLButtonElement | null>>({});
     const onKey = (e: React.KeyboardEvent, i: number) => {
       let n = i;
@@ -26,21 +29,21 @@ export const Tabs = forwardRef<HTMLDivElement, { active: TabId; onChange: (t: Ta
       refs.current[TABS[n].id]?.focus();
     };
     return (
-      <div ref={ref} className="sticky top-0 z-30 -mx-4 flex scroll-mt-0 items-center gap-2 bg-bg/90 px-4 py-3 backdrop-blur-md sm:-mx-6 sm:px-6">
-        <div role="tablist" aria-label="Calculator steps" className="grid min-w-0 flex-1 grid-cols-3 gap-1 rounded-full bg-surface p-1 sm:inline-grid sm:flex-none">
-          {TABS.map((t, i) => {
-            const on = t.id === active;
+      <div ref={ref} className="mb-5 flex items-center gap-2">
+        <div role="tablist" aria-label={t('step.aria')} className="grid min-w-0 flex-1 grid-cols-3 gap-1 rounded-full bg-surface p-1 sm:inline-grid sm:flex-none">
+          {TABS.map((tab, i) => {
+            const on = tab.id === active;
             return (
               <button
-                key={t.id}
-                ref={(el) => { refs.current[t.id] = el; }}
+                key={tab.id}
+                ref={(el) => { refs.current[tab.id] = el; }}
                 role="tab"
-                id={`tab-${t.id}`}
-                aria-label={t.label}
+                id={`tab-${tab.id}`}
+                aria-label={t(tab.label)}
                 aria-selected={on}
-                aria-controls={`panel-${t.id}`}
+                aria-controls={`panel-${tab.id}`}
                 tabIndex={on ? 0 : -1}
-                onClick={() => onChange(t.id)}
+                onClick={() => onChange(tab.id)}
                 onKeyDown={(e) => onKey(e, i)}
                 className={`flex min-h-10 min-w-0 items-center justify-center gap-1.5 rounded-full px-2 text-[13px] font-medium transition sm:gap-2 sm:px-5 sm:text-sm ${
                   on ? 'bg-text text-black' : 'text-text-muted hover:text-text'
@@ -49,13 +52,13 @@ export const Tabs = forwardRef<HTMLDivElement, { active: TabId; onChange: (t: Ta
                 <span
                   aria-hidden
                   className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ${
-                    on ? 'bg-black text-text' : done[t.id] ? 'bg-gold text-black' : 'bg-white/10'
+                    on ? 'bg-black text-text' : done[tab.id] ? 'bg-gold text-black' : 'bg-white/10'
                   }`}
                 >
-                  {done[t.id] && !on ? <CheckIcon size={11} /> : t.step}
+                  {done[tab.id] && !on ? <CheckIcon size={11} /> : tab.step}
                 </span>
-                <span aria-hidden className="whitespace-nowrap max-[399px]:hidden">{t.label}</span>
-                <span aria-hidden className="hidden whitespace-nowrap max-[399px]:inline">{t.short}</span>
+                <span aria-hidden className="whitespace-nowrap max-[479px]:hidden">{t(tab.label)}</span>
+                <span aria-hidden className="hidden whitespace-nowrap max-[479px]:inline">{t(tab.short)}</span>
               </button>
             );
           })}
@@ -63,12 +66,12 @@ export const Tabs = forwardRef<HTMLDivElement, { active: TabId; onChange: (t: Ta
         <button
           type="button"
           onClick={onReset}
-          aria-label="Start over: clear everything"
-          title="Start over: clear everything"
-          className="ml-auto flex h-12 w-12 shrink-0 items-center justify-center gap-2 rounded-full border border-white/20 text-sm font-medium text-text transition hover:border-gold hover:text-gold sm:h-11 sm:w-auto sm:px-5"
+          aria-label={t('startOver.aria')}
+          title={t('startOver.aria')}
+          className="ml-auto flex h-11 w-11 shrink-0 items-center justify-center gap-2 rounded-full text-sm text-text-muted ring-1 ring-white/10 transition hover:text-gold hover:ring-gold/60 sm:w-auto sm:px-5"
         >
           <ResetIcon size={17} />
-          <span className="hidden sm:inline">Start over</span>
+          <span className="hidden sm:inline">{t('startOver')}</span>
         </button>
       </div>
     );

@@ -1,23 +1,15 @@
+'use client';
+
 /* eslint-disable @next/next/no-img-element */
 import Link from 'next/link';
-import type { ReactNode } from 'react';
 import { BRAND } from '@/config/brand';
 import { RATES_UPDATED_ON } from '@/engine/config';
 import { longDate } from '@/lib/dates';
-import { BookIcon, CalculatorIcon, ChatIcon } from '@/components/ui/Icons';
+import { useT } from '@/state/LanguageContext';
 import { Disclaimer } from './Disclaimer';
 import type { NavSection } from './Header';
 
-function Col({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <div>
-      <h2 className="mb-4 text-[13px] font-semibold uppercase tracking-wider text-text-muted">{title}</h2>
-      {children}
-    </div>
-  );
-}
-
-const linkCls = 'flex min-h-9 items-center gap-2.5 text-sm text-text/90 transition hover:text-gold';
+const linkCls = 'min-h-9 text-sm text-text-muted transition hover:text-gold';
 
 /** Display a 91XXXXXXXXXX number as +91 XXXXX XXXXX. */
 function prettyPhone(n: string) {
@@ -26,66 +18,60 @@ function prettyPhone(n: string) {
 }
 
 export function Footer({ onNavigate }: { onNavigate?: (s: NavSection) => void }) {
+  const { t } = useT();
   const wa = BRAND.advisorWhatsApp;
   return (
-    <footer className="mt-24 border-t border-white/5 bg-surface/40">
-      <div className="mx-auto max-w-6xl px-4 pb-28 pt-12 sm:px-6 md:pb-10">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[minmax(0,5fr)_minmax(0,3fr)_minmax(0,4fr)]">
+    <footer className="mt-16 border-t border-white/5">
+      <div className="mx-auto max-w-6xl px-4 pb-24 pt-8 sm:px-6 md:pb-8">
+        <div className="grid gap-8 md:grid-cols-[minmax(0,5fr)_minmax(0,3fr)_minmax(0,4fr)]">
           <div>
             <div className="flex items-center gap-2.5">
-              <img src={BRAND.logoPath} alt="" width={32} height={32} className="h-8 w-8 rounded-lg" />
-              <span className="text-lg font-semibold tracking-tight">{BRAND.name}</span>
+              <img src={BRAND.logoPath} alt="" width={24} height={24} className="h-6 w-6 rounded-md" />
+              <span className="text-[15px] font-semibold tracking-tight">{BRAND.name}</span>
             </div>
-            <p className="mt-4 max-w-sm text-sm leading-relaxed text-text-muted">
-              A free calculator for Ahmedabad home buyers. See the true size, the real all-in price and your EMI, before you sign anything.
-            </p>
-            <p className="mt-4 inline-flex items-center gap-2 rounded-full bg-white/[0.05] px-3 py-1 text-xs text-text-muted">
-              <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-gold" />
-              Gujarat rates updated {longDate(RATES_UPDATED_ON)}
-            </p>
+            <p className="mt-3 max-w-sm text-[13px] leading-relaxed text-text-muted">{t('footer.about')}</p>
           </div>
 
           {onNavigate && (
-            <Col title="Explore">
-              <ul>
-                <li><button type="button" onClick={() => onNavigate('calculator')} className={linkCls}><CalculatorIcon className="text-text-muted" />Calculator</button></li>
-                <li><button type="button" onClick={() => onNavigate('glossary')} className={linkCls}><BookIcon className="text-text-muted" />Glossary</button></li>
-                <li><button type="button" onClick={() => onNavigate('advisor')} className={linkCls}><ChatIcon className="text-text-muted" />Talk to an advisor</button></li>
-                <li><Link href="/terms" className={`${linkCls} pl-[26px]`}>Terms &amp; privacy</Link></li>
+            <nav aria-label="Footer">
+              <ul className="flex flex-wrap gap-x-5 gap-y-1 md:flex-col md:gap-y-0">
+                <li><button type="button" onClick={() => onNavigate('calculator')} className={linkCls}>{t('nav.calculator')}</button></li>
+                <li><button type="button" onClick={() => onNavigate('how')} className={linkCls}>{t('nav.how')}</button></li>
+                <li><button type="button" onClick={() => onNavigate('glossary')} className={linkCls}>{t('nav.glossary')}</button></li>
+                <li><Link href="/terms" className={`inline-flex items-center ${linkCls}`}>{t('footer.terms')}</Link></li>
               </ul>
-            </Col>
+            </nav>
           )}
 
-          <Col title="Need help deciding?">
-            <p className="text-sm leading-relaxed text-text-muted">Our advisors check builder quotes, charges and loan offers. Free, no obligation.</p>
-            <div className="mt-5 flex flex-wrap gap-2">
+          <div>
+            <h2 className="text-sm font-semibold">{t('footer.help')}</h2>
+            <p className="mt-1 text-[13px] leading-relaxed text-text-muted">{t('footer.helpText')}</p>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
               {wa && (
                 <a
                   href={`https://wa.me/${wa}?text=${encodeURIComponent('Hi, I need help with a property I’m considering.')}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex min-h-11 items-center gap-2 rounded-full bg-gold px-5 text-sm font-semibold text-black transition hover:brightness-110"
+                  className="inline-flex min-h-10 items-center rounded-full bg-gold px-4 text-[13px] font-semibold text-black transition hover:brightness-110"
                 >
-                  <ChatIcon />
-                  WhatsApp us
+                  {t('footer.whatsapp')}
                 </a>
               )}
               {onNavigate && (
-                <button type="button" onClick={() => onNavigate('advisor')} className="inline-flex min-h-11 items-center rounded-full bg-white/[0.06] px-5 text-sm text-text transition hover:bg-white/10">
-                  Request a call
+                <button type="button" onClick={() => onNavigate('advisor')} className="inline-flex min-h-10 items-center rounded-full px-4 text-[13px] text-text ring-1 ring-white/15 transition hover:ring-gold/60">
+                  {t('footer.call')}
                 </button>
               )}
+              {wa && <span className="text-[13px] tabular-nums text-text-muted">{prettyPhone(wa)}</span>}
             </div>
-            {wa && <p className="mt-3 text-[13px] tabular-nums text-text-muted">{prettyPhone(wa)}</p>}
-          </Col>
+          </div>
         </div>
 
-        <div className="mt-12 border-t border-white/5 pt-6">
-          <Disclaimer />
-          <div className="mt-6 flex flex-col gap-2 text-xs text-text-muted sm:flex-row sm:items-center sm:justify-between">
-            <p>© {BRAND.name}. All figures are estimates.</p>
-            <p>Made for home buyers in Ahmedabad</p>
-          </div>
+        <div className="mt-8 border-t border-white/5 pt-5">
+          <Disclaimer className="!text-[11px]" />
+          <p className="mt-4 text-xs text-text-muted">
+            © {BRAND.name}. {t('footer.copy')} · {t('footer.rates')} {longDate(RATES_UPDATED_ON)}
+          </p>
         </div>
       </div>
     </footer>

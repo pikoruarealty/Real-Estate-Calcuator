@@ -9,6 +9,9 @@ import { Tabs, type TabId } from '@/components/layout/Tabs';
 import { Footer } from '@/components/layout/Footer';
 import { StickyTotalBar } from '@/components/layout/StickyTotalBar';
 import { GlossaryDialog } from '@/components/layout/GlossaryDialog';
+import { HowItWorksPanel } from '@/components/layout/HowItWorksPanel';
+import { HelpBanner, useHelpBanner } from '@/components/layout/HelpBanner';
+import { LanguageProvider, useT } from '@/state/LanguageContext';
 import { AdvisorDialog } from '@/components/advisor/AdvisorDialog';
 import { AreaTab } from './AreaTab';
 import { CostTab } from './CostTab';
@@ -45,6 +48,9 @@ function Shell() {
   };
   const [tab, setTab] = useState<TabId>('area');
   const [glossary, setGlossary] = useState(false);
+  const [how, setHow] = useState(false);
+  const { t } = useT();
+  const banner = useHelpBanner();
   const anchor = useRef<HTMLDivElement>(null);
 
   const goTo = useCallback((t: TabId) => {
@@ -55,17 +61,29 @@ function Shell() {
     });
   }, []);
 
-  const navActive: NavSection = glossary ? 'glossary' : advisorOpen ? 'advisor' : 'calculator';
+  const openGlossary = () => {
+    setAdvisorOpen(false);
+    setHow(false);
+    setGlossary(true);
+    banner.dismiss(); // they found the glossary, so the hint has done its job
+  };
+
+  const navActive: NavSection = glossary ? 'glossary' : how ? 'how' : advisorOpen ? 'advisor' : 'calculator';
   const navigate = (sNav: NavSection) => {
     if (sNav === 'calculator') {
       setGlossary(false);
+      setHow(false);
       setAdvisorOpen(false);
       anchor.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } else if (sNav === 'glossary') {
+      openGlossary();
+    } else if (sNav === 'how') {
       setAdvisorOpen(false);
-      setGlossary(true);
+      setGlossary(false);
+      setHow(true);
     } else {
       setGlossary(false);
+      setHow(false);
       track('advisor_open');
       setAdvisorOpen(true);
     }
@@ -81,19 +99,22 @@ function Shell() {
     <>
       <Header active={navActive} onNavigate={navigate} />
       <main className="mx-auto max-w-6xl px-4 sm:px-6">
-        <Hero onExample={() => { loadExample(); goTo('cost'); }} />
-        <div ref={anchor} className="scroll-mt-2" />
-        <Tabs active={tab} onChange={goTo} done={done} onReset={startOver} />
-        <div role="tabpanel" id={`panel-${tab}`} aria-labelledby={`tab-${tab}`} className="pt-3">
-          {tab === 'area' && <AreaTab onNext={() => goTo('cost')} />}
-          {tab === 'cost' && <CostTab onNext={() => goTo('loan')} onBack={() => goTo('area')} />}
-          {tab === 'loan' && <LoanTab onBack={() => goTo('cost')} />}
-        </div>
+        <Hero onExample={() => { loadExample(); goTo('cost'); }} onHow={() => navigate('how')} />
+        <section ref={anchor} id="calculator" aria-label={t('nav.calculator')} className="scroll-mt-4">
+          {banner.show && <HelpBanner onOpen={openGlossary} onDismiss={banner.dismiss} />}
+          <Tabs active={tab} onChange={goTo} done={done} onReset={startOver} />
+          <div role="tabpanel" id={`panel-${tab}`} aria-labelledby={`tab-${tab}`}>
+            {tab === 'area' && <AreaTab onNext={() => goTo('cost')} />}
+            {tab === 'cost' && <CostTab onNext={() => goTo('loan')} onBack={() => goTo('area')} />}
+            {tab === 'loan' && <LoanTab onBack={() => goTo('cost')} />}
+          </div>
+        </section>
       </main>
       <Footer onNavigate={navigate} />
       <StickyTotalBar onSeeCost={() => goTo('cost')} />
       <AdvisorDialog />
       <GlossaryDialog open={glossary} onClose={() => setGlossary(false)} />
+      <HowItWorksPanel open={how} onClose={() => setHow(false)} onStart={() => navigate('calculator')} />
       <Toast />
       {undo && (
         <div role="status" className="fixed inset-x-4 bottom-24 z-50 mx-auto flex max-w-sm items-center justify-between gap-3 rounded-full bg-text py-2 pl-5 pr-2 text-sm text-black shadow-2xl md:bottom-8">
@@ -113,8 +134,10 @@ function Shell() {
 
 export function CalculatorApp() {
   return (
-    <CalculatorProvider>
-      <Shell />
-    </CalculatorProvider>
+    <LanguageProvider>
+      <CalculatorProvider>
+        <Shell />
+      </CalculatorProvider>
+    </LanguageProvider>
   );
 }

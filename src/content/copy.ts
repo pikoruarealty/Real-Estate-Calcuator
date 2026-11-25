@@ -2,7 +2,7 @@ import { RATES_UPDATED_ON } from '@/engine/config';
 import { formatINR, formatINRWords } from '@/engine/format';
 import type { CalculatorResult, LoanInput, Warning, WarningCode } from '@/engine/types';
 
-export const DISCLAIMER = `Figures are indicative estimates based on the values you entered and Gujarat rates as of ${RATES_UPDATED_ON}. Builder charges (PLC, FRC, deposits, maintenance, development and other charges) vary by project and are not regulated amounts. Stamp duty is charged on the higher of agreement value and Jantri value. GST, stamp duty and loan terms may change. Confirm every amount with the developer, your lender and a legal or tax advisor before you pay. This is not legal, tax or financial advice.`;
+export const DISCLAIMER = `Figures are indicative estimates based on the values you entered and current rates as of ${RATES_UPDATED_ON}. Builder charges (PLC, FRC, deposits, maintenance, development and other charges) vary by project and are not regulated amounts. Stamp duty is charged on the higher of agreement value and Jantri value. GST, stamp duty and loan terms may change. Confirm every amount with the developer, your lender and a legal or tax advisor before you pay. This is not legal, tax or financial advice.`;
 
 export const LOAN_NOTE = 'Rates and eligibility are set by your lender. This is an estimate.';
 

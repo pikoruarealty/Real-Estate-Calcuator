@@ -20,13 +20,13 @@ export const SQFT_PER_UNIT = {
 } as const;
 
 export const VIGHA_VARIANTS = {
-  v17424: { sqft: 17424, label: 'Ahmedabad / North Gujarat (16 guntha)' }, // default
-  v21780: { sqft: 21780, label: '20-guntha vigha' },
-  v16875: { sqft: 16875, label: 'Central Gujarat' },
-  v23958: { sqft: 23958, label: 'South Gujarat' },
+  v17424: { sqft: 17424, label: '16 guntha' }, // default
+  v21780: { sqft: 21780, label: '20 guntha' },
+  v16875: { sqft: 16875, label: '15.5 guntha' },
+  v23958: { sqft: 23958, label: '22 guntha' },
 } as const;
 
-export const GUJARAT_UNITS: AreaUnit[] = ['sqft', 'sqm', 'sqyd', 'guntha', 'are', 'acre', 'hectare', 'vigha'];
+export const REGIONAL_UNITS_BASE: AreaUnit[] = ['sqft', 'sqm', 'sqyd', 'guntha', 'are', 'acre', 'hectare', 'vigha'];
 export const OTHER_STATE_UNITS: AreaUnit[] = ['cent', 'ground', 'marla', 'kanal'];
 
 export const UNIT_LABELS: Record<AreaUnit, string> = {
@@ -48,7 +48,7 @@ export const GST = {
   underConstructionPct: 5,
   affordablePct: 1,
   readyPct: 0,
-  affordableMaxCarpetSqm: 90, // non-metro (Ahmedabad); inclusive
+  affordableMaxCarpetSqm: 90, // non-metro; inclusive
   affordableMaxValue: 4_500_000, // inclusive
   commercialDefaultPct: 12, // TODO(spec): verify vs GST 2.0 before launch
   servicesPct: 18,

@@ -2,6 +2,7 @@
 
 import { useApp } from '@/state/CalculatorContext';
 import { Button } from '@/components/ui/Button';
+import { useT } from '@/state/LanguageContext';
 import { track } from '@/lib/analytics';
 
 /** variant: 'primary' (full CTA), 'compact' (sticky bar), 'link' (inline text link). */
@@ -9,6 +10,7 @@ export function AdvisorButton({
   variant = 'primary', compact, className = '',
 }: { variant?: 'primary' | 'compact' | 'link'; compact?: boolean; className?: string }) {
   const { setAdvisorOpen } = useApp();
+  const { t } = useT();
   const v = compact ? 'compact' : variant;
   const open = () => {
     track('advisor_open');
@@ -17,7 +19,7 @@ export function AdvisorButton({
   if (v === 'link') {
     return (
       <button type="button" onClick={open} className={`inline-flex min-h-8 items-center gap-1 text-sm font-medium text-gold hover:underline ${className}`}>
-        Talk to our advisor <span aria-hidden>→</span>
+        {t('advisor.link')} <span aria-hidden>→</span>
       </button>
     );
   }

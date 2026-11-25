@@ -3,6 +3,7 @@
 import { formatINR, formatINRWords, formatPct } from '@/engine/format';
 import type { CostResult } from '@/engine/types';
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
+import { useT } from '@/state/LanguageContext';
 import { Tooltip } from '@/components/ui/Tooltip';
 import { ShareMenu } from '@/components/share/ShareMenu';
 import { CompositionBar } from './CompositionBar';
@@ -17,10 +18,11 @@ function Stat({ label, value, tip }: { label: string; value: string; tip: string
 }
 
 export function CostHero({ cost }: { cost: CostResult }) {
+  const { t } = useT();
   return (
     <section className="relative overflow-hidden rounded-3xl bg-surface p-6 sm:p-8">
       <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-gold/10 blur-3xl" />
-      <p className="relative flex items-center text-sm text-text-muted">You’ll really pay<Tooltip term="allIn" /></p>
+      <p className="relative flex items-center text-sm text-text-muted">{t('cost.pay')}<Tooltip term="allIn" /></p>
       <p className="relative mt-1 text-[42px] font-semibold leading-none tracking-tight text-gold sm:text-6xl">
         <AnimatedNumber value={cost.allInCost} format={formatINR} testId="all-in" />
       </p>
@@ -28,7 +30,7 @@ export function CostHero({ cost }: { cost: CostResult }) {
         <span className="text-text">{formatINRWords(cost.allInCost)}</span>
         {cost.overHeadlinePct != null && (
           <span className="flex items-center rounded-full bg-white/[0.06] px-2.5 py-1 text-[13px] text-text-muted">
-            +{formatPct(cost.overHeadlinePct, 1)} over the base price<Tooltip term="overHeadline" />
+            +{formatPct(cost.overHeadlinePct, 1)} {t('cost.over')}<Tooltip term="overHeadline" />
           </span>
         )}
       </div>
@@ -36,8 +38,8 @@ export function CostHero({ cost }: { cost: CostResult }) {
       <div className="relative mt-8"><CompositionBar cost={cost} /></div>
 
       <div className="relative mt-8 grid grid-cols-2 gap-4 border-t border-white/5 pt-6">
-        <Stat label="Per sq ft you use" tip="effCarpet" value={cost.effectiveRatePerCarpetSqft != null ? formatINR(cost.effectiveRatePerCarpetSqft) : '—'} />
-        <Stat label="Per SBU sq ft" tip="effSbu" value={cost.effectiveRatePerSbuSqft != null ? formatINR(cost.effectiveRatePerSbuSqft) : '—'} />
+        <Stat label={t('cost.perUse')} tip="effCarpet" value={cost.effectiveRatePerCarpetSqft != null ? formatINR(cost.effectiveRatePerCarpetSqft) : '—'} />
+        <Stat label={t('cost.perSbu')} tip="effSbu" value={cost.effectiveRatePerSbuSqft != null ? formatINR(cost.effectiveRatePerSbuSqft) : '—'} />
       </div>
 
       <div className="relative mt-6"><ShareMenu /></div>
