@@ -1,12 +1,34 @@
 'use client';
 
-import { useCallback, useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { GLOSSARY, GLOSSARY_GROUPS } from '@/content/glossary';
 import { useT } from '@/state/LanguageContext';
 import { SidePanel } from './SidePanel';
 
 type Row = [string, (typeof GLOSSARY)[keyof typeof GLOSSARY]];
+
+/** Glossary keys that get a picture. Put the files in /public/glossary/. */
+const ILLUSTRATIONS: Record<string, { src: string; w: number; h: number; alt: { en: string; gu: string } }> = {
+  carpet: {
+    src: '/glossary/carpet-area.png',
+    w: 672,
+    h: 531,
+    alt: {
+      en: 'Floor plan showing carpet area: the usable floor inside the apartment, including internal walls, but not outer walls or the balcony.',
+      gu: 'ફ્લોર પ્લાન: કાર્પેટ એરિયા એટલે ફ્લેટની અંદરનો વપરાશલાયક ફ્લોર એરિયા. તેમાં અંદરની દીવાલો ગણાય છે, પણ બહારની દીવાલો અને બાલ્કની ગણાતા નથી.',
+    },
+  },
+  loading: {
+    src: '/glossary/loading.png',
+    w: 672, // set to the real pixel size of loading.png
+    h: 531,
+    alt: {
+      en: 'Diagram showing loading: the share of common areas (lobby, stairs, lifts, corridors) added on top of the carpet area to get the super built-up area you pay for.',
+      gu: 'ડાયાગ્રામ: લોડિંગ એટલે કાર્પેટ એરિયા ઉપર ઉમેરાતો કોમન એરિયા (લોબી, દાદર, લિફ્ટ, કોરિડોર) નો હિસ્સો, જેનાથી તમે ચૂકવો છો તે સુપર બિલ્ટ-અપ એરિયા બને છે.',
+    },
+  },
+};
 
 /* Small UI labels kept local so no i18n file changes are needed. */
 const LABELS = {
@@ -19,6 +41,7 @@ const LABELS = {
     collapse: 'Exit full screen',
     close: 'Close',
     clear: 'Clear search',
+    zoom: 'Tap to enlarge',
   },
   gu: {
     all: 'બધા',
@@ -29,6 +52,7 @@ const LABELS = {
     collapse: 'પૂર્ણ સ્ક્રીનમાંથી બહાર નીકળો',
     close: 'બંધ કરો',
     clear: 'શોધ સાફ કરો',
+    zoom: 'મોટું કરવા ટેપ કરો',
   },
 };
 
@@ -65,6 +89,9 @@ const CollapseIcon = () => (
 );
 const ChevronIcon = ({ className }: { className?: string }) => (
   <Svg size={14} className={className}><path d="m6 9 6 6 6-6" /></Svg>
+);
+const ZoomIcon = () => (
+  <Svg size={13}><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3M11 8v6M8 11h6" /></Svg>
 );
 const BookIcon = () => (
   <Svg size={20}>
@@ -116,12 +143,73 @@ function useLabels() {
   return lang === 'gu' ? LABELS.gu : LABELS.en;
 }
 
+/** Full-size picture viewer. Scrolls sideways on phones so small labels stay readable. */
+function Lightbox({ src, alt, onClose }: { src: string; alt: string; onClose: () => void }) {
+  const L = useLabels();
+  const ref = useRef<HTMLDivElement>(null);
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
+
+  useEffect(() => {
+    const el = ref.current;
+    if (el && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, easing: 'ease-out' });
+    }
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    // Capture phase + stopPropagation: Esc closes only the picture, not the whole glossary.
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        closeRef.current();
+      }
+    };
+    window.addEventListener('keydown', onKey, true);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener('keydown', onKey, true);
+    };
+  }, []);
+
+  return createPortal(
+    <div
+      ref={ref}
+      role="dialog"
+      aria-modal="true"
+      aria-label={alt}
+      onClick={onClose}
+      className="fixed inset-0 z-[120] flex items-center justify-center bg-black/90 p-3 backdrop-blur-sm sm:p-6"
+    >
+      <button
+        type="button"
+        onClick={onClose}
+        aria-label={L.close}
+        title={L.close}
+        className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white ring-1 ring-white/20 transition hover:bg-white/20 active:scale-95 sm:right-5 sm:top-5"
+      >
+        <XIcon />
+      </button>
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="max-h-[88vh] max-w-full overflow-auto rounded-xl bg-white shadow-2xl"
+      >
+        <img src={src} alt={alt} className="block h-auto w-[760px] max-w-none" />
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
 /* ---------- One glossary card ---------- */
 function Entry({ row, needle, full }: { row: Row; needle: string; full: boolean }) {
   const L = useLabels();
-  const [, e] = row;
+  const { lang } = useT();
+  const [k, e] = row;
   const [manual, setManual] = useState<boolean | null>(null);
+  const [zoom, setZoom] = useState(false);
   const bodyId = useId();
+  const pic = ILLUSTRATIONS[k];
+  const picAlt = pic ? (lang === 'gu' ? pic.alt.gu : pic.alt.en) : '';
 
   // If the search only matches the extra text, open the card so the match is visible.
   const autoOpen =
@@ -145,35 +233,62 @@ function Entry({ row, needle, full }: { row: Row; needle: string; full: boolean 
           <p className={`mt-1 leading-relaxed text-text-muted ${full ? 'text-[15px]' : 'text-sm'}`}>
             <Highlight text={e.tip} needle={needle} />
           </p>
-
-          {e.extra && (
-            <>
-              <div
-                id={bodyId}
-                className={`grid transition-all duration-300 ease-out motion-reduce:transition-none ${
-                  open ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
-                }`}
-              >
-                <div className="overflow-hidden">
-                  <p className="mt-2 rounded-xl border-l-2 border-gold/60 bg-gold/[0.06] px-3 py-2 text-sm leading-relaxed text-text-muted">
-                    <Highlight text={e.extra} needle={needle} />
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                aria-expanded={open}
-                aria-controls={bodyId}
-                onClick={() => setManual(!open)}
-                className="mt-2 inline-flex min-h-8 items-center gap-1 rounded-full text-xs font-medium text-gold transition hover:brightness-125"
-              >
-                {open ? L.less : L.more}
-                <ChevronIcon className={`transition-transform duration-300 ${open ? 'rotate-180' : ''}`} />
-              </button>
-            </>
-          )}
         </div>
       </div>
+
+      {/* Picture (only for terms that have one) */}
+      {pic && (
+        <>
+          <button
+            type="button"
+            onClick={() => setZoom(true)}
+            aria-label={`${L.zoom}: ${picAlt}`}
+            className="group/img relative mt-3 block w-full overflow-hidden rounded-xl bg-white ring-1 ring-white/10 transition duration-300 hover:ring-gold/60"
+          >
+            <img
+              src={pic.src}
+              alt={picAlt}
+              width={pic.w}
+              height={pic.h}
+              loading="lazy"
+              decoding="async"
+              className="h-auto w-full transition-transform duration-500 group-hover/img:scale-[1.03] motion-reduce:transform-none"
+            />
+            <span className="absolute bottom-2 right-2 inline-flex items-center gap-1.5 rounded-full bg-black/75 px-2.5 py-1 text-[11px] font-medium text-white backdrop-blur">
+              <ZoomIcon />
+              {L.zoom}
+            </span>
+          </button>
+          {zoom && <Lightbox src={pic.src} alt={picAlt} onClose={() => setZoom(false)} />}
+        </>
+      )}
+
+      {e.extra && (
+        <div className="mt-1 pl-12">
+          <div
+            id={bodyId}
+            className={`grid transition-all duration-300 ease-out motion-reduce:transition-none ${
+              open ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+            }`}
+          >
+            <div className="overflow-hidden">
+              <p className="mt-2 rounded-xl border-l-2 border-gold/60 bg-gold/[0.06] px-3 py-2 text-sm leading-relaxed text-text-muted">
+                <Highlight text={e.extra} needle={needle} />
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            aria-expanded={open}
+            aria-controls={bodyId}
+            onClick={() => setManual(!open)}
+            className="mt-2 inline-flex min-h-8 items-center gap-1 rounded-full text-xs font-medium text-gold transition hover:brightness-125"
+          >
+            {open ? L.less : L.more}
+            <ChevronIcon className={`transition-transform duration-300 ${open ? 'rotate-180' : ''}`} />
+          </button>
+        </div>
+      )}
     </article>
   );
 }
@@ -334,23 +449,32 @@ function FullScreen({
 }) {
   const L = useLabels();
   const ref = useRef<HTMLDivElement>(null);
-  const [shown, setShown] = useState(false);
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
 
   useEffect(() => {
-    const id = requestAnimationFrame(() => setShown(true));
+    const el = ref.current;
+    if (el && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      el.animate(
+        [
+          { opacity: 0, transform: 'scale(0.98)' },
+          { opacity: 1, transform: 'scale(1)' },
+        ],
+        { duration: 300, easing: 'ease-out' },
+      );
+    }
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    ref.current?.focus();
+    el?.focus({ preventScroll: true });
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') closeRef.current();
     };
     window.addEventListener('keydown', onKey);
     return () => {
-      cancelAnimationFrame(id);
       document.body.style.overflow = prev;
       window.removeEventListener('keydown', onKey);
     };
-  }, [onClose]);
+  }, []);
 
   const btn =
     'flex h-10 w-10 items-center justify-center rounded-full text-text-muted ring-1 ring-white/10 transition-all duration-300 hover:scale-105 hover:text-gold hover:ring-gold/50 active:scale-95';
@@ -362,9 +486,7 @@ function FullScreen({
       aria-modal="true"
       aria-labelledby={titleId}
       tabIndex={-1}
-      className={`fixed inset-0 z-[70] flex flex-col bg-black/95 outline-none backdrop-blur-2xl transition-all duration-300 motion-reduce:transition-none ${
-        shown ? 'scale-100 opacity-100' : 'scale-[0.98] opacity-0'
-      }`}
+      className="fixed inset-0 z-[100] flex flex-col bg-black/95 outline-none backdrop-blur-2xl"
     >
       <div
         aria-hidden
@@ -426,8 +548,6 @@ export function GlossaryDialog({ open, onClose }: { open: boolean; onClose: () =
     [searched, group],
   );
 
-  const exitFull = useCallback(() => setFull(false), []);
-
   const shared = { q, setQ, needle, group, setGroup, counts, rows };
 
   return (
@@ -447,7 +567,7 @@ export function GlossaryDialog({ open, onClose }: { open: boolean; onClose: () =
           titleId={fullTitleId}
           title={t('glossary.title')}
           subtitle={t('glossary.sub')}
-          onExit={exitFull}
+          onExit={() => setFull(false)}
           onClose={onClose}
         >
           <Content {...shared} full />
